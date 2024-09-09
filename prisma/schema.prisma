@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model content {
+  content_id    Int                   @id @unique(map: "content_id_UNIQUE") @default(autoincrement())
+  title         String?               @db.VarChar(45)
+  description   String?               @db.LongText
+  release_date  DateTime?             @db.Date
+  content_type  content_content_type?
+  genre         String?               @db.VarChar(45)
+  rating        Decimal?              @db.Decimal(3, 1)
+  duration      String?               @db.VarChar(45)
+  episodes      String?               @db.VarChar(45)
+  created_at    DateTime?             @default(now()) @db.Timestamp(0)
+  watch_history watch_history[]
+}
+
+model subscription_type {
+  type_id           Int                                  @id
+  subscription_type subscription_type_subscription_type?
+  cost              Decimal?                             @db.Decimal(10, 0)
+  user_subscription user_subscription[]
+}
+
+model user_subscription {
+  sub_id            Int                       @id @default(autoincrement())
+  user_id           Int
+  sub_type          Int?
+  start_date        DateTime?                 @db.DateTime(0)
+  end_date          DateTime?                 @db.DateTime(0)
+  status            user_subscription_status?
+  created_at        DateTime?                 @default(now()) @db.Timestamp(0)
+  subscription_type subscription_type?        @relation(fields: [sub_type], references: [type_id], onDelete: NoAction, onUpdate: NoAction, map: "sub_type")
+  users             users                     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "users_id")
+
+  @@index([sub_type], map: "sub_type_idx")
+  @@index([user_id], map: "user_id")
+}
+
+model users {
+  user_id           Int                 @id @unique(map: "user-id_UNIQUE") @default(autoincrement())
+  username          String              @db.VarChar(45)
+  email             String?             @unique(map: "email_UNIQUE") @db.VarChar(45)
+  password          String             @db.VarChar(255)
+  phone_number      String?             @map("phone number") @db.VarChar(45)
+  firsname          String?             @db.VarChar(45)
+  lastname          String?             @db.VarChar(45)
+  created_at        DateTime?           @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?           @default(now()) @db.Timestamp(0)
+  user_subscription user_subscription[]
+  watch_history     watch_history[]
+}
+
+model watch_history {
+  watch_id         Int       @id @default(autoincrement())
+  user_id          Int
+  content_id       Int
+  watched_at       DateTime? @default(now()) @db.Timestamp(0)
+  duration_watched String?   @db.VarChar(45)
+  content          content   @relation(fields: [content_id], references: [content_id], onDelete: NoAction, onUpdate: NoAction, map: "content_id")
+  users            users     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
+
+  @@index([content_id], map: "content_id_idx")
+  @@index([user_id], map: "user_id_idx")
+}
+
+enum subscription_type_subscription_type {
+  individual
+  family
+  premium
+}
+
+enum content_content_type {
+  movie
+  tv_show
+}
+
+enum user_subscription_status {
+  active
+  cancelled
+  expired
+}

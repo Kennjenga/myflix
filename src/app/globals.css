@@ -6,6 +6,22 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --font-size: 16px;
+  --my-background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgb(20, 1, 20) 100%);
+  --card-bg: radial-gradient(circle, #1e111e 0%,#e28997 100%);
+}
+
+*{
+  box-sizing: border-box;
+  font-size: var(--font-size);
+}
+.card-bg{
+  /* background: var(--card-bg); */
+  background: transparent;
+  backdrop-filter: blur(30px);
+}
+.my-bg{
+  background: var(--my-background);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,10 +40,56 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+    
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+/* hero */
+.custom-shape-divider-bottom-1725277913 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1725277913 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 101px;
+}
+
+.custom-shape-divider-bottom-1725277913 .shape-fill {
+  fill: rgb(9, 1, 9); 
+}
+
+/* curve text */
+.curved-text {
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  padding: 10px;
+  border-radius: 100px;
+  transform: rotate(360deg);
+  /* Create a curved text effect */
+  text-align: center;
+  width: 400px;
+  height: 100px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #fff, #fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (min-width: 465px) and (max-width: 760px) {
+  .card-range {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
