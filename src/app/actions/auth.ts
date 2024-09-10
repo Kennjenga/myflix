@@ -62,12 +62,14 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
     username: formData.get('username'),
     email: formData.get('email'),
     password: formData.get('password'),
+    confirm_password: formData.get('confirm_password'),
   });
 
   // If any form fields are invalid, return early with errors
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Invalid fields. Please check your input.',
     };
   }
 

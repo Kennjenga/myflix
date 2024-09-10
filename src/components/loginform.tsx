@@ -6,19 +6,18 @@ import { SubmitButton } from "./submitButton";
 import { useFormState } from "react-dom";
 import { login } from "@/app/actions/auth";
 import { LoginFormState } from "@/app/lib/definitions";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function LoginForm() {
-  const router = useRouter();
   const [state, formAction] = useFormState<LoginFormState, FormData>(login, {});
 
   useEffect(() => {
     if (state.success && state.user) {
       // Redirect to login page after successful signup
-      router.push("/content");
+      redirect("/content");
     }
-  }, [state.success, state.user, router]);
+  }, [state.success, state.user]);
 
   return (
     <div className="flex flex-col md:flex-row w-9/10 max-h-full mx-auto shadow-lg rounded-lg overflow-hidden">
