@@ -59,19 +59,23 @@ const Header = () => {
     router.push(`/content?${params.toString()}`);
   };
 
-  // Debounced search function to limit API calls
+  // Debounced search to avoid too many API calls
   const debouncedSearch = debounce(async (value: string) => {
     if (value.length > 2) {
       try {
-        // Fetch movies matching the search query
         const response = await fetch(
-          `/api/search?query=${encodeURIComponent(value)}&content_type=movie`
+          `/api/content?query=${encodeURIComponent(value)}`
         );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
         const data = await response.json();
         setSearchResults(data.content);
         setIsDropdownVisible(true);
       } catch (error) {
         console.error("Error fetching search results:", error);
+        setSearchResults([]);
+        setIsDropdownVisible(false);
       }
     } else {
       setSearchResults([]);
@@ -79,18 +83,18 @@ const Header = () => {
     }
   }, 300);
 
+  // Handle search result click
+  const handleResultClick = (result: SearchResult) => {
+    router.push(`/content/${result.id}`);
+    setSearchQuery(result.title);
+    setIsDropdownVisible(false);
+  };
+
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
     debouncedSearch(value);
-  };
-
-  // Handle search result click and redirect
-  const handleResultClick = (result: SearchResult) => {
-    router.push(`/content/${result.id}`);
-    setSearchQuery(result.title);
-    setIsDropdownVisible(false);
   };
 
   return (
@@ -132,6 +136,7 @@ const Header = () => {
               value={searchQuery}
               onChange={handleSearchChange}
             />
+
             {isDropdownVisible && searchResults.length > 0 && (
               <div className="absolute top-full left-0 w-64 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-50">
                 {searchResults.map((result) => (
