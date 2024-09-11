@@ -42,3 +42,11 @@ export async function GET(request: Request) {
     );
   }
 }
+
+
+// const results = await prisma.$queryRaw`
+//   SELECT * FROM content
+//   WHERE LOWER(title) LIKE LOWER(${search})
+//   LIMIT 10
+// `;
+

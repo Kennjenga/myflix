@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
+import { logout } from "@/app/actions/auth";
 
 interface SearchResult {
   id: number;
@@ -81,7 +82,7 @@ const Header = () => {
       setSearchResults([]);
       setIsDropdownVisible(false);
     }
-  }, 300);
+  }, 600);
 
   // Handle search result click
   const handleResultClick = (result: SearchResult) => {
@@ -173,7 +174,7 @@ const Header = () => {
           <span className="text-white">Welcome, {user.username}</span>
           <button
             className="bg-white text-blue-900 px-4 py-1 rounded-xl me-3"
-            onClick={() => console.log("Logout")}
+            onClick={() => logout()}
           >
             Logout
           </button>
