@@ -7,7 +7,7 @@ import debounce from "lodash.debounce";
 import { logout } from "@/app/actions/auth";
 
 interface SearchResult {
-  id: number;
+  content_id: number;
   title: string;
   content_type: string;
 }
@@ -71,6 +71,7 @@ const Header = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
+        console.log(data.content);
         setSearchResults(data.content);
         setIsDropdownVisible(true);
       } catch (error) {
@@ -86,7 +87,7 @@ const Header = () => {
 
   // Handle search result click
   const handleResultClick = (result: SearchResult) => {
-    router.push(`/content/${result.id}`);
+    router.push(`/content/${result.content_id}`);
     setSearchQuery(result.title);
     setIsDropdownVisible(false);
   };
@@ -99,7 +100,7 @@ const Header = () => {
   };
 
   return (
-    <div className="mt-1 mb-3 w-full mx-auto sm:mx-2 flex justify-between items-center z-10">
+    <div className="mt-1 mb-3 w-full p-3 mx-auto sm:mx-2 flex justify-between items-center z-10">
       <div className="flex items-center lg:justify-between gap-4 w-[80%]">
         <div className="text-white text-2xl font-bold ms-3">MYFLIX</div>
 
@@ -142,7 +143,7 @@ const Header = () => {
               <div className="absolute top-full left-0 w-64 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-50">
                 {searchResults.map((result) => (
                   <div
-                    key={result.id}
+                    key={result.content_id}
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleResultClick(result)}
                   >

@@ -70,7 +70,7 @@ const Page = () => {
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <Header />
-      <div className="container my-3 mx-2 grid grid-cols-1 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="w-9/10 my-3 mx-2 grid grid-cols-1 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {loading ? (
           <p>Loading...</p>
         ) : content.length > 0 ? (
@@ -90,11 +90,16 @@ const Page = () => {
         )}
       </div>
       <div className="flex justify-center my-4">
-        <button onClick={() => handlePageChange(page - 1)} disabled={page <= 1}>
+        <button
+          className="me-2 shadow-md bg-violet-500/40 hover:bg-violet-700 px-1 py-0.5 rounded-lg"
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page <= 1}
+        >
           Previous
         </button>
         <span className="mx-2">{page}</span>
         <button
+          className="ms-2 shadow-md bg-violet-500/40 hover:bg-violet-700 px-1 py-0.5 rounded-lg"
           onClick={() => handlePageChange(page + 1)}
           disabled={page >= totalPages}
         >
