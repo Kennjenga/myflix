@@ -70,7 +70,10 @@ const Page = () => {
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <Header />
-      <div className="w-9/10 my-3 mx-2 grid grid-cols-1 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="flex flex-col w-9/10">
+        <h1 className="text-3xl font-bold mb-4">Trending Shows</h1>
+      </div>
+      <div className="w-9/10 my-3 mx-2 grid grid-cols-2 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {loading ? (
           <p>Loading...</p>
         ) : content.length > 0 ? (

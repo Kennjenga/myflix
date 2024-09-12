@@ -104,60 +104,67 @@ const Header = () => {
       <div className="flex items-center lg:justify-between gap-4 w-[80%]">
         <div className="text-white text-2xl font-bold ms-3">MYFLIX</div>
 
-        <div className="hidden lg:flex items-center gap-12">
+        <div className="hidden lg:flex items-center gap-6">
           <nav>
             <ul className="flex space-x-6 text-white">
-              <Link href="/">Home</Link>
+              <Link
+                href="/"
+                className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5"
+              >
+                Home
+              </Link>
               <li
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5"
                 onClick={() => handleFilter("content_type", "movie")}
               >
                 Movies
               </li>
               <li
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5"
                 onClick={() => handleFilter("content_type", "tv_show")}
               >
                 TV Shows
               </li>
               <li
-                className="cursor-pointer"
+                className="cursor-pointer hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5"
                 onClick={() => handleFilter("sort", "top_rated")}
               >
                 Top IMDB
               </li>
+
+              <li>
+                {/* Search Input */}
+                <div className="relative" ref={dropdownRef}>
+                  <input
+                    type="text"
+                    placeholder="Search for movies..."
+                    className="px-4 py-1 rounded-md w-64 text-black"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+
+                  {isDropdownVisible && searchResults.length > 0 && (
+                    <div className="absolute top-full left-0 w-64 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-50">
+                      {searchResults.map((result) => (
+                        <div
+                          key={result.content_id}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-lg"
+                          onClick={() => handleResultClick(result)}
+                        >
+                          <p className="text-sm font-medium text-gray-900">
+                            {result.title}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {result.content_type}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </li>
             </ul>
           </nav>
-
-          {/* Search Input */}
-          <div className="relative" ref={dropdownRef}>
-            <input
-              type="text"
-              placeholder="Search for movies..."
-              className="px-4 py-1 rounded-md w-64 text-black"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-
-            {isDropdownVisible && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 w-64 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-50">
-                {searchResults.map((result) => (
-                  <div
-                    key={result.content_id}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleResultClick(result)}
-                  >
-                    <p className="text-sm font-medium text-gray-900">
-                      {result.title}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {result.content_type}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -171,8 +178,8 @@ const Header = () => {
 
       {/* User Profile and Logout Button */}
       {user ? (
-        <div className="flex items-center gap-4">
-          <span className="text-white">Welcome, {user.username}</span>
+        <div className="flex items-center gap-4 ms-2">
+          <span className="text-white">{user.username}</span>
           <button
             className="bg-white text-blue-900 px-4 py-1 rounded-xl me-3"
             onClick={() => logout()}
@@ -190,22 +197,34 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="fixed inset-0 bg-blue-900 bg-opacity-90 z-20 p-4 md:hidden">
-          <button className="text-white mb-4" onClick={() => setIsOpen(false)}>
-            Close
+        <div className="fixed inset-0 bg-violet-800 bg-opacity-90 z-20 p-4 md:hidden">
+          <button
+            className="text-white mb-4 hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5"
+            onClick={() => setIsOpen(false)}
+          >
+            close
           </button>
           <nav>
             <ul className="flex flex-col items-center space-y-4 text-white">
               <Link href="/" onClick={() => setIsOpen(false)}>
                 Home
               </Link>
-              <li onClick={() => handleFilter("content_type", "movie")}>
+              <li
+                className="cursor-pointer hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5 hover:text-blue-400 transition duration-300"
+                onClick={() => handleFilter("content_type", "movie")}
+              >
                 Movies
               </li>
-              <li onClick={() => handleFilter("content_type", "tv_show")}>
+              <li
+                className="cursor-pointer hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5 hover:text-blue-400 transition duration-300"
+                onClick={() => handleFilter("content_type", "tv_show")}
+              >
                 TV Shows
               </li>
-              <li onClick={() => handleFilter("sort", "top_rated")}>
+              <li
+                className="cursor-pointer hover:bg-violet-700 active:bg-violet-700 rounded-lg p-0.5 hover:text-blue-400 transition duration-300"
+                onClick={() => handleFilter("sort", "top_rated")}
+              >
                 Top IMDB
               </li>
             </ul>

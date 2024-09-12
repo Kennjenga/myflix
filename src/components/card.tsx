@@ -23,7 +23,7 @@ const Card: React.FC<CardProps> = ({
     <Link href={`/content/${id}`}>
       <div
         style={cardStyle}
-        className="card-bg shadow-md shadow-violet-500/40 hover:shadow-lg hover:shadow-violet-700"
+        className="card-bg shadow-md shadow-violet-500/40 hover:shadow-lg hover:shadow-violet-700 w-full max-w-72"
       >
         <Image
           src={imageUrl}
