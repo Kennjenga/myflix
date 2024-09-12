@@ -1,6 +1,7 @@
 import Header from "@/components/header";
 import Image from "next/image";
 import { CalendarDays, Clock, Film, Tv, Play } from "lucide-react";
+import { getCanonicalUrl } from "@/utils";
 
 interface Content {
   duration: string;
@@ -15,7 +16,7 @@ interface Content {
 
 async function fetchContent(id: number): Promise<Content | null> {
   try {
-    const res = await fetch(`http://localhost:3000/api/content/${id}`);
+    const res = await fetch(`${getCanonicalUrl()}/api/content/${id}`);
     if (!res.ok) throw new Error("Failed to fetch content");
     const data = await res.json();
     return Array.isArray(data) ? data[0] : data;

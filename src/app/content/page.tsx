@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import debounce from "lodash.debounce";
 import Card from "@/components/card";
 import Footer from "@/components/Footer";
 import Header from "@/components/header";
@@ -61,12 +60,6 @@ const Page = () => {
     };
     loadContent();
   }, [fetchContent]);
-
-  const handleSearchChange = debounce((value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("search", value);
-    router.push(`/content?${params.toString()}`);
-  }, 500);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
