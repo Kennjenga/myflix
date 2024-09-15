@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { decrypt } from '@/app/lib/session'; // Adjust the import path as needed
+import { decrypt } from '@/app/lib/session'; 
+
 
 export async function GET() {
   const sessionCookie = cookies().get('session');

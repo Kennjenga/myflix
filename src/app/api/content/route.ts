@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
   // Apply search filter (case-sensitive for now, or use lowercased approach)
   if (search) {
-    filter.title = { contains: search }; // Removed 'mode' argument
+    filter.title = { contains: search }; 
   }
 
   // Apply sorting if "top_rated" is requested

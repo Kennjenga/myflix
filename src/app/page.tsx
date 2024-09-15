@@ -1,6 +1,7 @@
 import Footer from "@/components/Footer";
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
+import { Play, Film, Tv, Zap } from "lucide-react";
 
 export default function Home() {
   return (
@@ -64,6 +65,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-[80px]">Why Choose MyFlix?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
+              <Film className="w-16 h-16 mx-auto mb-6 text-purple-500" />
               <h3 className="text-xl font-semibold mb-4">
                 Unlimited Movies & TV Shows
               </h3>
@@ -73,6 +75,7 @@ export default function Home() {
               </p>
             </div>
             <div>
+              <Tv className="w-16 h-16 mx-auto mb-6 text-purple-500" />
               <h3 className="text-xl font-semibold mb-4">
                 Watch Anytime, Anywhere
               </h3>
@@ -81,6 +84,7 @@ export default function Home() {
               </p>
             </div>
             <div>
+              <Zap className="w-16 h-16 mx-auto mb-6 text-purple-500" />
               <h3 className="text-xl font-semibold mb-4">Affordable Plans</h3>
               <p>
                 Choose from a variety of plans to suit your needs and budget.
