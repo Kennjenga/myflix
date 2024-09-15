@@ -80,7 +80,7 @@ export async function signup(
   const { username, email, password } = validatedFields.data;
 
   // 3. Hash the password
-  const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     // 4. Insert the user into the MySQL database using Prisma
