@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Card from "@/components/card";
 import Footer from "@/components/Footer";
@@ -19,7 +19,7 @@ interface ContentResponse {
   totalPages: number;
 }
 
-const Page = () => {
+const ContentList = () => {
   const [content, setContent] = useState<Content[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
@@ -68,11 +68,7 @@ const Page = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center w-full">
-      <Header />
-      <div className="flex flex-col w-9/10">
-        <h1 className="text-3xl font-bold mb-4">Trending Shows</h1>
-      </div>
+    <>
       <div className="w-9/10 my-3 mx-2 grid grid-cols-2 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {loading ? (
           <p>Loading...</p>
@@ -109,6 +105,20 @@ const Page = () => {
           Next
         </button>
       </div>
+    </>
+  );
+};
+
+const Page = () => {
+  return (
+    <div className="flex flex-col justify-center items-center w-full">
+      <Header />
+      <div className="flex flex-col w-9/10">
+        <h1 className="text-3xl font-bold mb-4">Trending Shows</h1>
+      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <ContentList />
+      </Suspense>
       <Footer />
     </div>
   );
