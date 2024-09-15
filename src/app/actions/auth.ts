@@ -56,7 +56,10 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
   }
 }
 
-export async function signup(prevState: FormState, formData: FormData): Promise<FormState> {
+export async function signup(
+  prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
   // 1. Validate form fields
   const validatedFields = SignupFormSchema.safeParse({
     username: formData.get('username'),
@@ -69,14 +72,14 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields. Please check your input.',
+      message: "Invalid fields. Please check your input.",
     };
   }
 
   // 2. Extract validated data
   const { username, email, password } = validatedFields.data;
 
-  // 3. Hash the password if it exists (password is optional in your model)
+  // 3. Hash the password
   const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
   try {
@@ -84,8 +87,8 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
     const user = await prisma.users.create({
       data: {
         username: username,
-        email: email || null,  // Handle optional email
-        password: hashedPassword,  // Handle optional password
+        email: email, 
+        password: hashedPassword!, 
       },
       select: { user_id: true }, // Only return the user ID
     });
@@ -93,25 +96,25 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
     // 5. Return success with the user ID if the user was created
     return {
       success: true,
-      message: 'Account created successfully!',
+      message: "Account created successfully!",
       userId: user.user_id,
     };
   } catch (error: any) {
     // Handle unique constraint violation errors (e.g., duplicate email or username)
-    if (error.code === 'P2002') {
-      // Assuming Prisma returns `P2002` for unique constraint violations
+    if (error.code === "P2002" && error.meta?.target) {
+      const targetField = error.meta.target; // Get the conflicting field (email or username)
       return {
         success: false,
         errors: {
-          email: ['This email is already in use.'],
-          username: ['This username is already in use.'], // Handle duplicate username too
+          [targetField]: [`This ${targetField} is already in use.`],
         },
+        message: "Unique constraint violation.",
       };
     }
     // Catch-all error handling
     return {
       success: false,
-      message: 'An error occurred while creating your account.',
+      message: "An error occurred while creating your account.",
     };
   }
 }
