@@ -112,8 +112,8 @@ export default async function Page({ params }: { params: { id: string } }) {
         <Image
           src={`/assets/${content.title}.jfif`}
           alt={content.title}
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: "cover" }}
           priority={true}
           quality={90}
         />

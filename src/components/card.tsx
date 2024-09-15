@@ -30,7 +30,11 @@ const Card: React.FC<CardProps> = ({
           alt={title}
           width={300}
           height={200}
-          style={{ borderRadius: "8px", marginBottom: "16px" }}
+          style={{
+            borderRadius: "8px",
+            marginBottom: "16px",
+            objectFit: "cover",
+          }}
           className="h-44 w-full"
         />
         <h2 className="line-clamp-1"> {title}</h2>
