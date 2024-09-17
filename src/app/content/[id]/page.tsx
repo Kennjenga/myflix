@@ -2,6 +2,11 @@ import Header from "@/components/header";
 import Image from "next/image";
 import { CalendarDays, Clock, Film, Tv, Play } from "lucide-react";
 import { getCanonicalUrl } from "@/utils";
+import { cookies } from "next/headers";
+import { decrypt } from "@/app/lib/session";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/options";
+import { ContentDetails } from "@/components/contentDetails";
 
 interface Content {
   duration: string;
@@ -26,65 +31,24 @@ async function fetchContent(id: number): Promise<Content | null> {
   }
 }
 
-function ContentDetails({ content }: { content: Content }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div className="col-span-2">
-        <p className="text-gray-300">{content.description}</p>
-      </div>
-      <div>
-        {[
-          {
-            label: "Content Type",
-            value: content.content_type.replace("_", " "),
-            capitalize: true,
-          },
-          { label: "Release Date", value: content.release_date },
-          { label: "Duration", value: content.duration },
-          ...(content.content_type === "tv_show"
-            ? [{ label: "Episodes", value: content.episodes }]
-            : []),
-        ].map(({ label, value, capitalize }) => (
-          <div key={label} className="mb-4">
-            <h3 className="text-lg font-medium mb-2 text-gray-400">{label}</h3>
-            <p className={`text-gray-300 ${capitalize ? "capitalize" : ""}`}>
-              {value}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function EpisodeList({ episodes }: { episodes: number }) {
-  return (
-    <div className="space-y-4">
-      {Array.from({ length: episodes }, (_, i) => (
-        <div
-          key={i + 1}
-          className="flex items-center space-x-4 bg-gray-900 p-4 rounded-lg"
-        >
-          <div className="w-16 h-16 bg-gray-800 flex items-center justify-center rounded">
-            <span className="text-2xl font-bold">{i + 1}</span>
-          </div>
-          <div>
-            <h3 className="font-semibold">Episode {i + 1}</h3>
-            <p className="text-sm text-gray-400">
-              Episode description not available
-            </p>
-          </div>
-          <button className="ml-auto">
-            <Play className="w-8 h-8" />
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default async function Page({ params }: { params: { id: string } }) {
   const content = await fetchContent(Number(params.id));
+  const session = await getServerSession(options);
+
+  let user;
+
+  if (session) {
+    // If session exists, use the user from the session
+    user = session.user;
+  } else {
+    // If no session, check the cookies for a session token
+    const sessionCookie = cookies().get("session");
+    if (sessionCookie) {
+      // Decrypt the session cookie to get user information
+      const decryptedSession = await decrypt(sessionCookie.value);
+      user = decryptedSession; // Assuming decryptedSession contains user info
+    }
+  }
 
   if (!content) {
     return (
@@ -104,7 +68,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-start items-center bg-black text-white">
-      <Header />
+      <Header user={user} />
       <div
         className="relative w-full"
         style={{ height: "56.25vw", maxHeight: "80vh" }}
