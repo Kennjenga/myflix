@@ -12,32 +12,28 @@ interface SearchResult {
   content_type: string;
 }
 
-const Header = () => {
+type User =
+  | {
+      // login?: string | null | undefined;
+      name?: string | null | undefined;
+      email?: string | null | undefined;
+      image?: string | null | undefined;
+      role?: string | null | undefined;
+    }
+  | undefined;
+
+type Props = {
+  user: User;
+};
+
+const Header = ({ user }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const [user, setUser] = useState<{ username: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch user info on mount
-  useEffect(() => {
-    async function fetchUserInfo() {
-      try {
-        const response = await fetch("/api/user");
-        const data = await response.json();
-        if (data.user) {
-          setUser(data.user);
-        }
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    }
-    fetchUserInfo();
-  }, []);
-
-  // Close search dropdown if clicked outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -53,14 +49,12 @@ const Header = () => {
     };
   }, []);
 
-  // Handle filtering by content type or rating
   const handleFilter = (filterType: string, value: string) => {
     const params = new URLSearchParams();
     params.set(filterType, value);
     router.push(`/content?${params.toString()}`);
   };
 
-  // Debounced search to avoid too many API calls
   const debouncedSearch = debounce(async (value: string) => {
     if (value.length > 2) {
       try {
@@ -71,7 +65,6 @@ const Header = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log(data.content);
         setSearchResults(data.content);
         setIsDropdownVisible(true);
       } catch (error) {
@@ -85,14 +78,12 @@ const Header = () => {
     }
   }, 600);
 
-  // Handle search result click
   const handleResultClick = (result: SearchResult) => {
     router.push(`/content/${result.content_id}`);
     setSearchQuery(result.title);
     setIsDropdownVisible(false);
   };
 
-  // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -133,7 +124,6 @@ const Header = () => {
               </li>
 
               <li>
-                {/* Search Input */}
                 <div className="relative" ref={dropdownRef}>
                   <input
                     type="text"
@@ -142,7 +132,6 @@ const Header = () => {
                     value={searchQuery}
                     onChange={handleSearchChange}
                   />
-
                   {isDropdownVisible && searchResults.length > 0 && (
                     <div className="absolute top-full left-0 w-64 mt-1 bg-white rounded-md shadow-lg overflow-hidden z-50">
                       {searchResults.map((result) => (
@@ -167,7 +156,6 @@ const Header = () => {
           </nav>
         </div>
 
-        {/* Mobile Menu Toggle */}
         <button
           className="lg:hidden text-white"
           onClick={() => setIsOpen(!isOpen)}
@@ -176,10 +164,9 @@ const Header = () => {
         </button>
       </div>
 
-      {/* User Profile and Logout Button */}
       {user ? (
         <div className="flex items-center gap-4 ms-2">
-          <span className="text-white">{user.username}</span>
+          <span className="text-white">{user?.name}</span>
           <button
             className="bg-white text-blue-900 px-4 py-1 rounded-xl me-3"
             onClick={() => logout()}
@@ -195,7 +182,6 @@ const Header = () => {
         </Link>
       )}
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="fixed inset-0 bg-violet-800 bg-opacity-90 z-20 p-4 md:hidden">
           <button

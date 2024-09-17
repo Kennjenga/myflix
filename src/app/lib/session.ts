@@ -3,10 +3,10 @@ import { SignJWT, jwtVerify } from 'jose';
 import { SessionPayload } from '@/app/lib/definitions';
 import { cookies } from 'next/headers';
 
-const secretKey = process.env.SESSION_SECRET;
+const secretKey = process.env.NEXTAUTH_SECRET;
 
 if (!secretKey) {
-  throw new Error('SESSION_SECRET environment variable is not set');
+  throw new Error('NEXTAUTH_SECRET environment variable is not set');
 }
 
 const encodedKey = new TextEncoder().encode(secretKey);
@@ -41,14 +41,14 @@ export async function decrypt(session: string | undefined = '') {
 }
 
 // Create a session and set the cookie
-export async function createSession(userId: string, username: string) {
+export async function createSession(userId: string, name: string) {
   try {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day expiration
     const session = await encrypt({
       userId,
       expiresAt,
       email: '',
-      username,
+      name,
       role: '',
     });
 
@@ -103,6 +103,9 @@ export async function updateSession() {
 export function deleteSession() {
   try {
     cookies().delete('session');
+    cookies().delete('next-auth.session-token');
+    cookies().delete('next-auth.callback-url');
+    cookies().delete('next-auth.csrf-token');
   } catch (error) {
     console.error('Error deleting session:', error);
     throw new Error('Failed to delete session');

@@ -6,11 +6,13 @@ import { SubmitButton } from "./submitButton";
 import { useFormState } from "react-dom";
 import { login } from "@/app/actions/auth";
 import { LoginFormState } from "@/app/lib/definitions";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
   const [state, formAction] = useFormState<LoginFormState, FormData>(login, {});
+  const router = useRouter();
 
   useEffect(() => {
     if (state.success && state.user) {
@@ -18,6 +20,11 @@ export default function LoginForm() {
       redirect("/content");
     }
   }, [state.success, state.user]);
+
+  const handleOAuthSignIn = (provider: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    signIn(provider); // This should now work correctly
+  };
 
   return (
     <div className="flex flex-col md:flex-row w-9/10 max-h-full mx-auto shadow-lg rounded-lg overflow-hidden">
@@ -77,6 +84,41 @@ export default function LoginForm() {
         {state?.success && (
           <p className="mt-4 text-green-600 font-semibold">{state.message}</p>
         )}
+
+        {/* OAuth buttons */}
+        <div className="mt-6">
+          <p className="text-center text-sm text-gray-600 mb-4">
+            Or login with
+          </p>
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={handleOAuthSignIn("google")}
+              className="px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+            >
+              <img
+                className="w-6 h-6"
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                loading="lazy"
+                alt="google logo"
+              />
+              <span>Google</span>
+            </button>
+            <button
+              onClick={handleOAuthSignIn("github")}
+              className="px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+            >
+              <img
+                className="w-6 h-6"
+                src="https://www.svgrepo.com/show/512317/github-142.svg"
+                loading="lazy"
+                alt="github logo"
+              />
+              <span>GitHub</span>
+            </button>
+          </div>
+        </div>
+
+        {/* don't have an account */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don&#39;t have an account?{" "}

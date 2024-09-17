@@ -71,6 +71,6 @@ export type LoginFormState = {
 export interface SessionPayload extends JWTPayload  {
   userId: string;
   email: string;
-  username: string;
+  name: string;
   role: string; // e.g., "user" or "admin"
 }

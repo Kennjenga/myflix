@@ -1,5 +1,4 @@
 import LoginForm from "@/components/loginform";
-import { error } from "console";
 import Link from "next/link";
 
 const page = () => {
