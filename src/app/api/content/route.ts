@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
   // Apply search filter (case-sensitive for now, or use lowercased approach)
   if (search) {
-    filter.title = { contains: search }; 
+    filter.title = { contains: search };
   }
 
   // Apply sorting if "top_rated" is requested
@@ -37,11 +37,84 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Error fetching data:", error);
     return NextResponse.json(
-      { error: "Error fetching data", details: error},
+      { error: "Error fetching data", details: error },
       { status: 500 }
     );
   }
 }
+export async function POST(request: Request) {
+  try {
+    const { title, description, releaseDate, genre, rating, type, duration, episodes } = await request.json();
+
+    // Data validation
+    if (!title || !rating || !type) {
+      return NextResponse.json({ error: "Title, Rating, and Type are required fields." }, { status: 400 });
+    }
+
+    const newContent = await prisma.content.create({
+      data: {
+        title,
+        description,
+        release_date: new Date(releaseDate),
+        genre,
+        rating,
+        content_type: type,
+        duration: type === 'movie' ? duration : null,
+        episodes: type === 'tv_show' ? episodes : null,
+      },
+    });
+
+    return NextResponse.json({ content: newContent });
+  } catch (error) {
+    console.error("Error creating content:", error);
+    return NextResponse.json({ error: "Error creating content" }, { status: 500 });
+  }
+}
+
+// //update content
+// export async function PUT(request: Request) {
+//   const { content_id, title, description, releaseDate, genre, rating, type, duration, episodes } = await request.json();
+
+//   if (!content_id) return NextResponse.json({ error: "Content ID is required." }, { status: 400 });
+
+//   try {
+//     const updatedContent = await prisma.content.update({
+//       where: { content_id },
+//       data: {
+//         title,
+//         description,
+//         release_date: new Date(releaseDate),
+//         genre,
+//         rating,
+//         content_type: type,
+//         duration: type === 'movie' ? duration : null,
+//         episodes: type === 'tv_show' ? episodes : null,
+//       },
+//     });
+
+//     return NextResponse.json({ content: updatedContent });
+//   } catch (error) {
+//     console.error("Error updating content:", error);
+//     return NextResponse.json({ error: "Error updating content" }, { status: 500 });
+//   }
+// }
+
+// //delete content
+// export async function DELETE(request: Request) {
+//   const content_id = Number(new URL(request.url).searchParams.get("id") || "");
+
+//   if (!content_id) return NextResponse.json({ error: "Content ID is required." }, { status: 400 });
+
+//   try {
+//     await prisma.content.delete({
+//       where: { content_id },
+//     });
+//     return NextResponse.json({ message: "Content deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting content:", error);
+//     return NextResponse.json({ error: "Error deleting content" }, { status: 500 });
+//   }
+// }
 
 
 // const results = await prisma.$queryRaw`
