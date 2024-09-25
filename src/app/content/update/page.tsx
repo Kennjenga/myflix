@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 export default function ContentManagementPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [releaseDate, setReleaseDate] = useState("");
+  const [release_date, setReleaseDate] = useState("");
   const [genre, setGenre] = useState("");
   const [rating, setRating] = useState<number>(0);
-  const [type, setType] = useState("movie");
+  const [content_type, setContentType] = useState("movie"); // Updated variable name
   const [duration, setDuration] = useState<number | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
   const [contentList, setContentList] = useState<any[]>([]);
@@ -32,12 +32,12 @@ export default function ContentManagementPage() {
       const newContent = {
         title,
         description,
-        releaseDate,
+        release_date: new Date("2024-09-25").toISOString(),
         genre,
-        rating,
-        type,
-        duration: type === "movie" ? duration : null,
-        episodes: type === "tv_show" ? episodes : null,
+        rating: Number(rating),
+        content_type, // Updated variable name
+        duration: content_type === "movie" ? duration : null, // Updated variable name
+        episodes: content_type === "tv_show" ? episodes : null, // Updated variable name
       };
 
       const response = await fetch("/api/content", {
@@ -53,7 +53,7 @@ export default function ContentManagementPage() {
         fetchContent();
         resetForm();
       } else {
-        alert("Error creating content");
+        alert("Errcor creating content");
       }
     }
   };
@@ -63,24 +63,26 @@ export default function ContentManagementPage() {
 
     if (window.confirm("Are you sure you want to update this content?")) {
       const updatedContent = {
-        id: selectedContent.id,
         title,
         description,
-        releaseDate,
+        release_date: new Date("2024-09-25").toISOString(), // Updated variable name
         genre,
         rating,
-        type,
-        duration: type === "movie" ? duration : null,
-        episodes: type === "tv_show" ? episodes : null,
+        content_type, // Updated variable name
+        duration: content_type === "movie" ? duration : null, // Updated variable name
+        episodes: content_type === "tv_show" ? episodes : null, // Updated variable name
       };
 
-      const response = await fetch(`/api/content/${selectedContent.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedContent),
-      });
+      const response = await fetch(
+        `/api/content/${selectedContent.content_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedContent),
+        }
+      );
 
       if (response.ok) {
         alert("Content updated successfully!");
@@ -111,10 +113,10 @@ export default function ContentManagementPage() {
     setSelectedContent(content);
     setTitle(content.title);
     setDescription(content.description);
-    setReleaseDate(content.release_date.split('T')[0]);
+    setReleaseDate(content.release_date.split("T")[0]); // Updated variable name
     setGenre(content.genre);
     setRating(content.rating);
-    setType(content.content_type);
+    setContentType(content.content_type); // Updated variable name
     setDuration(content.duration);
     setEpisodes(content.episodes);
   };
@@ -126,7 +128,7 @@ export default function ContentManagementPage() {
     setReleaseDate("");
     setGenre("");
     setRating(0);
-    setType("movie");
+    setContentType("movie"); // Updated variable name
     setDuration(null);
     setEpisodes(null);
   };
@@ -135,19 +137,121 @@ export default function ContentManagementPage() {
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-4">Content Management</h1>
 
-      <form className="mb-8">
-        <h2 className="text-xl font-bold">{selectedContent ? "Update" : "Create"} Content</h2>
+      <form className="mb-8 space-y-4">
+        <h2 className="text-xl font-bold">
+          {selectedContent ? "Update" : "Create"} Content
+        </h2>
 
-        {/* Form fields */}
-        {/* ... (include all form fields here) ... */}
+        {/* Title */}
+        <div>
+          <label className="block font-medium">Title</label>
+          <input
+            type="text"
+            className="w-full px-4 py-2 border rounded text-black"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block font-medium">Description</label>
+          <textarea
+            className="w-full px-4 py-2 border rounded text-black"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+
+        {/* Release Date */}
+        <div>
+          <label className="block font-medium">Release Date</label>
+          <input
+            type="date"
+            className="w-full px-4 py-2 border rounded text-black"
+            value={release_date} // Updated variable name
+            onChange={(e) => setReleaseDate(e.target.value)}
+          />
+        </div>
+
+        {/* Genre */}
+        <div>
+          <label className="block font-medium">Genre</label>
+          <input
+            type="text"
+            className="w-full px-4 py-2 border rounded text-black"
+            value={genre}
+            onChange={(e) => setGenre(e.target.value)}
+          />
+        </div>
+
+        {/* Rating */}
+        <div>
+          <label className="block font-medium">Rating</label>
+          <input
+            type="number"
+            className="w-full px-4 py-2 border rounded text-black"
+            value={rating}
+            onChange={(e) => setRating(Number(e.target.value))}
+            min="0"
+            max="10"
+          />
+        </div>
+
+        {/* Type (Movie or TV Show) */}
+        <div>
+          <label className="block font-medium">Content Type</label>
+          <select
+            className="w-full px-4 py-2 border rounded text-black"
+            value={content_type} // Updated variable name
+            onChange={(e) => setContentType(e.target.value)} // Updated variable name
+          >
+            <option value="movie">Movie</option>
+            <option value="tv_show">TV Show</option>
+          </select>
+        </div>
+
+        {/* Duration or Episodes */}
+        {content_type === "movie" ? ( // Updated variable name
+          <div>
+            <label className="block font-medium">Duration (minutes)</label>
+            <input
+              type="number"
+              className="w-full px-4 py-2 border rounded text-black"
+              value={duration || ""}
+              onChange={(e) => setDuration(Number(e.target.value))}
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="block font-medium">Episodes</label>
+            <input
+              type="number"
+              className="w-full px-4 py-2 border rounded text-black"
+              value={episodes || ""}
+              onChange={(e) => setEpisodes(Number(e.target.value))}
+            />
+          </div>
+        )}
 
         <button
           type="button"
           onClick={selectedContent ? handleUpdateContent : handleCreateContent}
-          className="bg-blue-500 text-white px-4 py-2"
+          className={`${
+            selectedContent ? "bg-yellow-500" : "bg-blue-500"
+          } text-white px-4 py-2`}
         >
           {selectedContent ? "Update Content" : "Create Content"}
         </button>
+        {selectedContent && (
+          <button
+            type="button"
+            onClick={resetForm}
+            className="ml-4 bg-gray-500 text-white px-4 py-2"
+          >
+            Cancel
+          </button>
+        )}
       </form>
 
       <h2 className="text-xl font-bold mb-4">Existing Content</h2>
@@ -175,7 +279,7 @@ export default function ContentManagementPage() {
                   Update
                 </button>
                 <button
-                  onClick={() => handleDeleteContent(content.id)}
+                  onClick={() => handleDeleteContent(content.content_id)}
                   className="bg-red-500 text-white px-4 py-2"
                 >
                   Delete

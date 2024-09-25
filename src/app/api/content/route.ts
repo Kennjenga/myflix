@@ -44,10 +44,10 @@ export async function GET(request: Request) {
 }
 export async function POST(request: Request) {
   try {
-    const { title, description, releaseDate, genre, rating, type, duration, episodes } = await request.json();
+    const { title, description, release_date, genre, rating, content_type, duration, episodes } = await request.json();
 
     // Data validation
-    if (!title || !rating || !type) {
+    if (!title || !rating || !content_type) {
       return NextResponse.json({ error: "Title, Rating, and Type are required fields." }, { status: 400 });
     }
 
@@ -55,25 +55,25 @@ export async function POST(request: Request) {
       data: {
         title,
         description,
-        release_date: new Date(releaseDate),
+        release_date: new Date(release_date),
         genre,
         rating,
-        content_type: type,
-        duration: type === 'movie' ? duration : null,
-        episodes: type === 'tv_show' ? episodes : null,
+        content_type: content_type,
+        duration: content_type === 'movie' ? duration : null,
+        episodes: content_type === 'tv_show' ? episodes : null,
       },
     });
 
     return NextResponse.json({ content: newContent });
   } catch (error) {
-    console.error("Error creating content:", error);
-    return NextResponse.json({ error: "Error creating content" }, { status: 500 });
+    console.error("Erqaror creating content:", error);
+    return NextResponse.json({ error: "Errpor creating content" }, { status: 500 });
   }
 }
 
 // //update content
 // export async function PUT(request: Request) {
-//   const { content_id, title, description, releaseDate, genre, rating, type, duration, episodes } = await request.json();
+//   const { content_id, title, description, releaseDate, genre, rating, content_type, duration, episodes } = await request.json();
 
 //   if (!content_id) return NextResponse.json({ error: "Content ID is required." }, { status: 400 });
 
