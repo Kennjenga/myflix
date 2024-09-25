@@ -131,8 +131,7 @@ export function SignupForm() {
         <Image
           src="/hero-flix1.jpeg?height=600&width=600"
           alt="Signup illustration"
-          layout="fill"
-          objectFit="cover"
+          fill
         />
       </div>
     </div>

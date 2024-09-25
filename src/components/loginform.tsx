@@ -32,8 +32,7 @@ export default function LoginForm() {
         <Image
           src="/hero-flix.jpeg"
           alt="Login illustration"
-          layout="fill"
-          objectFit="cover"
+          fill
         />
       </div>
       <form action={formAction} className="flex-1 p-8 bg-white text-gray-700">
