@@ -26,7 +26,10 @@ export const options: NextAuthOptions = {
       profile(profile) {
         console.log("Google profile:", profile);
 
-        let userRole = "Google User"; // Changed from "GitHub User" to "Google User" for consistency
+        let userRole = "Google User"; 
+        if (profile?.email === "kinyagia10@gmail.com") {
+          userRole = "admin";
+        }
 
         return {
           ...profile,
@@ -52,12 +55,21 @@ export const options: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
-    },
+        // console.log("Redirect URL:", url);
+        // console.log("Base URL:", baseUrl);
+    
+        // Check if the URL is the login page
+        if (url === `${baseUrl}/login`) {
+          return `${baseUrl}/content`; // Redirect to /content from /login
+        }
+        
+        // Default redirect logic for other URLs
+        if (url.startsWith("/")) return `${baseUrl}${url}`;
+        else if (new URL(url).origin === baseUrl) return url;
+    
+        return baseUrl; // Fallback
+      },
+    
   },
   pages: {
     signIn: '/login', // Correct path based on where your login page is located

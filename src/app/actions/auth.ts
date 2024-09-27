@@ -26,7 +26,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     // Find user by email
     const user = await prisma.users.findUnique({
       where: { email },
-      select: { user_id: true, password: true, username: true }, // Only select necessary fields
+      select: { user_id: true, password: true, username: true ,email: true}, // Only select necessary fields
     });
 
     // Check if user exists (invalid email)
@@ -43,7 +43,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     }
 
     // If both email and password are correct, create a session
-    await createSession(`session: ${user.user_id}`, `${user.username}`);
+    await createSession(`session: ${user.user_id}`, `${user.username}`, `${user.email}`);
     return {
       success: true,
       message: 'Login successful!',
@@ -120,6 +120,6 @@ export async function signup(
 }
 
 export async function logout() {
-  deleteSession()
+  await deleteSession()
   redirect('/')
 }

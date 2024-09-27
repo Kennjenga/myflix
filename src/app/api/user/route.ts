@@ -1,22 +1,27 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { decrypt } from '@/app/lib/session';
+import prisma from '@/app/lib/prisma';
 
-export async function GET() {
-  const sessionCookie = cookies().get('session'); // Get the session cookie
+//Get by email
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const email = searchParams.get('email');
 
-  if (!sessionCookie) {
-    return NextResponse.json({ user: null, message: 'No session cookie' }); // Return a JSON response
+  if (!email) {
+    return NextResponse.json({ error: 'Email is required' }, { status: 400 });
   }
 
   try {
-    const session = await decrypt(sessionCookie.value); // Decrypt the session cookie
-    if (session && session.username) {
-      return NextResponse.json({ user: { username: session.username } }); // Return user info
-    }
-  } catch (error) {
-    console.error('Error decrypting session:', error);
-  }
+    const user = await prisma.users.findUnique({
+      where: { email },
+    });
 
-  return NextResponse.json({ user: null }); // Return null if no valid session
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import Card from "./card";
 
 interface Content {
+  image_url: any;
   content_id: number;
   title: string;
   release_date: string;
@@ -78,7 +79,9 @@ export const ContentList = () => {
               contentType={item.content_type}
               releaseYear={new Date(item.release_date).getFullYear()}
               rating={item.rating}
-              imageUrl={`/assets/${item.title}.jfif`}
+              imageUrl={
+                item.image_url ? item.image_url : `/assets/${item.title}.jfif`
+              }
             />
           ))
         ) : (

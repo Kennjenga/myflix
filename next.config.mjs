@@ -7,6 +7,13 @@ const nextConfig = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_NAME: process.env.DB_NAME,
   },
+  images: {
+    domains: [
+      // add images url here no https
+      "dx35vtwkllhj9.cloudfront.net",
+      "encrypted-tbn0.gstatic.com",
+    ],
+  },
 };
 
 export default nextConfig;

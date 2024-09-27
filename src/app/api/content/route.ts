@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 }
 export async function POST(request: Request) {
   try {
-    const { title, description, release_date, genre, rating, content_type, duration, episodes } = await request.json();
+    const { title, description, release_date, genre, rating, content_type, duration, episodes ,image_url} = await request.json();
 
     // Data validation
     if (!title || !rating || !content_type) {
@@ -61,8 +61,10 @@ export async function POST(request: Request) {
         content_type: content_type,
         duration: content_type === 'movie' ? duration : null,
         episodes: content_type === 'tv_show' ? episodes : null,
-      },
+        image_url,
+      }
     });
+
 
     return NextResponse.json({ content: newContent });
   } catch (error) {

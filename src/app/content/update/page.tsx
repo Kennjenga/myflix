@@ -9,9 +9,10 @@ export default function ContentManagementPage() {
   const [release_date, setReleaseDate] = useState("");
   const [genre, setGenre] = useState("");
   const [rating, setRating] = useState<number>(0);
-  const [content_type, setContentType] = useState("movie"); // Updated variable name
-  const [duration, setDuration] = useState<number | null>(null);
+  const [content_type, setContentType] = useState("movie");
+  const [duration, setDuration] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
+  const [image_url, setImage_url] = useState(""); // New state for image URL
   const [contentList, setContentList] = useState<any[]>([]);
   const [selectedContent, setSelectedContent] = useState<any>(null);
 
@@ -32,12 +33,13 @@ export default function ContentManagementPage() {
       const newContent = {
         title,
         description,
-        release_date: new Date("2024-09-25").toISOString(),
+        release_date: new Date(release_date).toISOString(), // Use the input date
         genre,
         rating: Number(rating),
-        content_type, // Updated variable name
-        duration: content_type === "movie" ? duration : null, // Updated variable name
-        episodes: content_type === "tv_show" ? episodes : null, // Updated variable name
+        content_type,
+        duration: content_type === "movie" ? duration : null,
+        episodes: content_type === "tv_show" ? episodes : null,
+        image_url, // Include image URL
       };
 
       const response = await fetch("/api/content", {
@@ -53,7 +55,7 @@ export default function ContentManagementPage() {
         fetchContent();
         resetForm();
       } else {
-        alert("Errcor creating content");
+        alert("Error creating content");
       }
     }
   };
@@ -65,12 +67,13 @@ export default function ContentManagementPage() {
       const updatedContent = {
         title,
         description,
-        release_date: new Date("2024-09-25").toISOString(), // Updated variable name
+        release_date: new Date(release_date).toISOString(),
         genre,
         rating,
-        content_type, // Updated variable name
-        duration: content_type === "movie" ? duration : null, // Updated variable name
-        episodes: content_type === "tv_show" ? episodes : null, // Updated variable name
+        content_type,
+        duration: content_type === "movie" ? duration : null,
+        episodes: content_type === "tv_show" ? episodes : null,
+        image_url, // Include image URL
       };
 
       const response = await fetch(
@@ -113,12 +116,13 @@ export default function ContentManagementPage() {
     setSelectedContent(content);
     setTitle(content.title);
     setDescription(content.description);
-    setReleaseDate(content.release_date.split("T")[0]); // Updated variable name
+    setReleaseDate(content.release_date.split("T")[0]);
     setGenre(content.genre);
     setRating(content.rating);
-    setContentType(content.content_type); // Updated variable name
+    setContentType(content.content_type);
     setDuration(content.duration);
     setEpisodes(content.episodes);
+    setImage_url(content.image_url); // Set image URL for update
   };
 
   const resetForm = () => {
@@ -128,9 +132,10 @@ export default function ContentManagementPage() {
     setReleaseDate("");
     setGenre("");
     setRating(0);
-    setContentType("movie"); // Updated variable name
+    setContentType("movie");
     setDuration(null);
     setEpisodes(null);
+    setImage_url(""); // Reset image URL
   };
 
   return (
@@ -169,7 +174,7 @@ export default function ContentManagementPage() {
           <input
             type="date"
             className="w-full px-4 py-2 border rounded text-black"
-            value={release_date} // Updated variable name
+            value={release_date}
             onChange={(e) => setReleaseDate(e.target.value)}
           />
         </div>
@@ -198,13 +203,25 @@ export default function ContentManagementPage() {
           />
         </div>
 
+        {/* Image URL */}
+        <div>
+          <label className="block font-medium">Image URL</label>
+          <input
+            type="text"
+            className="w-full px-4 py-2 border rounded text-black"
+            value={image_url} // Image URL input
+            onChange={(e) => setImage_url(e.target.value)}
+            placeholder="Enter image URL"
+          />
+        </div>
+
         {/* Type (Movie or TV Show) */}
         <div>
           <label className="block font-medium">Content Type</label>
           <select
             className="w-full px-4 py-2 border rounded text-black"
-            value={content_type} // Updated variable name
-            onChange={(e) => setContentType(e.target.value)} // Updated variable name
+            value={content_type}
+            onChange={(e) => setContentType(e.target.value)}
           >
             <option value="movie">Movie</option>
             <option value="tv_show">TV Show</option>
@@ -212,14 +229,14 @@ export default function ContentManagementPage() {
         </div>
 
         {/* Duration or Episodes */}
-        {content_type === "movie" ? ( // Updated variable name
+        {content_type === "movie" ? (
           <div>
-            <label className="block font-medium">Duration (minutes)</label>
+            <label className="block font-medium">Duration</label>
             <input
-              type="number"
+              type="text"
               className="w-full px-4 py-2 border rounded text-black"
               value={duration || ""}
-              onChange={(e) => setDuration(Number(e.target.value))}
+              onChange={(e) => setDuration(e.target.value)}
             />
           </div>
         ) : (

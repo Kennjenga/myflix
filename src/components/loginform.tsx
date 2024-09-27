@@ -23,17 +23,13 @@ export default function LoginForm() {
 
   const handleOAuthSignIn = (provider: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    signIn(provider); // This should now work correctly
+    signIn(provider);
   };
 
   return (
     <div className="flex flex-col md:flex-row w-9/10 max-h-full mx-auto shadow-lg rounded-lg overflow-hidden">
       <div className="flex-1 relative hidden md:block">
-        <Image
-          src="/hero-flix.jpeg"
-          alt="Login illustration"
-          fill
-        />
+        <Image src="/hero-flix.jpeg" alt="Login illustration" fill />
       </div>
       <form action={formAction} className="flex-1 p-8 bg-white text-gray-700">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">
