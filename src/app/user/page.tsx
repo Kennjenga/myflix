@@ -4,6 +4,12 @@ import { decrypt } from "@/app/lib/session";
 import UserProfileEditForm from "@/components/UserProfileEditForm";
 import { cookies } from "next/headers";
 import { getCanonicalUrl } from "@/utils";
+import Link from "next/link";
+import { Metadata } from "next";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 
 interface UserProfile {
   user_id: number;
@@ -14,7 +20,12 @@ interface UserProfile {
   lastname: string | null;
 }
 
-const UserProfilePage = async () => {
+export const metadata: Metadata = {
+  title: "Edit Profile | MyFlix",
+  description: "Edit your MyFlix profile",
+};
+
+export default async function UserProfilePage() {
   const session = await getServerSession(options);
   const sessionCookie = cookies().get("session");
   const user =
@@ -22,29 +33,68 @@ const UserProfilePage = async () => {
     (sessionCookie ? await decrypt(sessionCookie.value) : null);
 
   if (!user) {
-    return <div className="text-red-500">User not authenticated</div>; // Handle unauthenticated case
+    return (
+      <Alert variant="destructive" className="max-w-md mx-auto mt-8">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Authentication Error</AlertTitle>
+        <AlertDescription>
+          You are not authenticated. Please{" "}
+          <Link
+            href="/login"
+            className="font-medium underline underline-offset-4"
+          >
+            log in
+          </Link>{" "}
+          to view this page.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
-  console.log(user);
-  // Fetch user data from API using email
   const response = await fetch(
     `${getCanonicalUrl()}/api/user?email=${user.email}`
   );
-  let userProfile: UserProfile = await response.json();
-  console.log(userProfile);
+  let userProfile: UserProfile | null = null;
 
   if (!response.ok) {
-    return <div className="text-red-500">Error: User not found</div>;
+    return (
+      <Alert variant="destructive" className="max-w-md mx-auto mt-8">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Failed to fetch user profile. Please try again later.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
+  userProfile = await response.json();
+
   return (
-    <div className="w-[65%] mx-auto p-6 bg-white rounded-lg shadow-md mt-6">
-      <h1 className="text-2xl font-bold mb-4 text-black">
-        Edit Profile for {userProfile?.username || "User"}
-      </h1>
-      <UserProfileEditForm userProfile={userProfile} />
+    <div className="container mx-auto px-4 py-8">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Edit Profile</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {userProfile && <UserProfileEditForm userProfile={userProfile} />}
+          <div className="mt-6 flex justify-between items-center">
+            <Button variant="outline" asChild>
+              <Link href="/content">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Content
+              </Link>
+            </Button>
+            {user.role == "admin" && (
+              <Button variant="outline" asChild>
+                <Link href="/content/update"> Update & create content</Link>
+              </Button>
+            )}
+            <p className="text-sm text-muted-foreground">
+              Last updated: {new Date().toLocaleDateString()}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-export default UserProfilePage;
+}

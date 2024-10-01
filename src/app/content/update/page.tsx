@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function ContentManagementPage() {
   const [title, setTitle] = useState("");
@@ -269,6 +272,11 @@ export default function ContentManagementPage() {
             Cancel
           </button>
         )}
+        <Button variant="outline" asChild className="w-full">
+          <Link href="/user">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Profile
+          </Link>
+        </Button>
       </form>
 
       <h2 className="text-xl font-bold mb-4">Existing Content</h2>
