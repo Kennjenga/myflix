@@ -1,9 +1,9 @@
 "use server"
 
-import { FormState, LoginFormState, LoginSchema, SignupFormSchema } from '@/app/lib/definitions';
+import { FormState, LoginFormState, LoginSchema, SignupFormSchema } from '@/lib/definitions';
 import bcrypt from 'bcryptjs';
-import prisma from '../lib/prisma';
-import { createSession, deleteSession } from '../lib/session';
+import prisma from '../../lib/prisma';
+import { createSession, deleteSession } from '../../lib/session';
 import { redirect } from 'next/navigation';
 
 export async function login(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {

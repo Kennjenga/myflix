@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/header";
 import { ContentList } from "@/components/contentList";
 import { cookies } from "next/headers";
-import { decrypt } from "../lib/session";
+import { decrypt } from "../../lib/session";
 
 const Page = async () => {
   const session = await getServerSession(options);

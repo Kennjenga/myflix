@@ -7,7 +7,8 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --font-size: 16px;
-  --my-background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgb(20, 1, 20) 100%);
+  /* Elegant dark purple background */
+  --my-background: radial-gradient(circle at center, rgba(25, 0, 50, 1) 0%, rgba(10, 0, 30, 1) 60%, rgba(5, 0, 20, 1) 100%);
   --card-bg: radial-gradient(circle, #1e111e 0%,#e28997 100%);
 }
 
@@ -53,10 +54,6 @@
   display: block;
   width: calc(100% + 1.3px);
   height: 101px;
-}
-
-.custom-shape-divider-bottom-1725277913 .shape-fill {
-  fill: rgb(9, 1, 9); 
 }
 
 /* curve text */

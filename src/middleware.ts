@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from "next-auth/jwt"
-import { decrypt } from '@/app/lib/session'
+import { decrypt } from '@/lib/session'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/content', '/content/', '/user']

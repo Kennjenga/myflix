@@ -5,7 +5,7 @@ import Link from "next/link";
 import { SubmitButton } from "./submitButton";
 import { useFormState } from "react-dom";
 import { login } from "@/app/actions/auth";
-import { LoginFormState } from "@/app/lib/definitions";
+import { LoginFormState } from "@/lib/definitions";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { signIn } from "next-auth/react";

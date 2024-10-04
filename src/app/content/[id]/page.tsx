@@ -5,7 +5,7 @@ import Image from "next/image";
 import { CalendarDays, Clock, Film, Tv, Play } from "lucide-react";
 import { ContentDetails } from "@/components/contentDetails";
 import { cookies } from "next/headers";
-import { decrypt } from "@/app/lib/session";
+import { decrypt } from "@/lib/session";
 import { getCanonicalUrl } from "@/utils";
 
 interface Content {

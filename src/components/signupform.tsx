@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { SubmitButton } from "./submitButton";
 import { signup } from "@/app/actions/auth";
-import { FormState } from "@/app/lib/definitions";
+import { FormState } from "@/lib/definitions";
 
 export function SignupForm() {
   const router = useRouter();

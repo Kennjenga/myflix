@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
-import { decrypt } from "@/app/lib/session";
+import { decrypt } from "@/lib/session";
 import UserProfileEditForm from "@/components/UserProfileEditForm";
 import { cookies } from "next/headers";
 import { getCanonicalUrl } from "@/utils";

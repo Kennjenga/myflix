@@ -272,7 +272,7 @@ export default function ContentManagementPage() {
             Cancel
           </button>
         )}
-        <Button variant="outline" asChild className="w-full">
+        <Button variant="outline" asChild className="w-full text-black">
           <Link href="/user">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Profile
           </Link>
