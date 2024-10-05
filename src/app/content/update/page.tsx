@@ -2,9 +2,42 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function ContentManagementPage() {
   const [title, setTitle] = useState("");
@@ -15,20 +48,26 @@ export default function ContentManagementPage() {
   const [content_type, setContentType] = useState("movie");
   const [duration, setDuration] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
-  const [image_url, setImage_url] = useState(""); // New state for image URL
+  const [image_url, setImage_url] = useState("");
   const [contentList, setContentList] = useState<any[]>([]);
   const [selectedContent, setSelectedContent] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
 
   const router = useRouter();
 
   useEffect(() => {
     fetchContent();
-  }, []);
+  }, [currentPage]);
 
   async function fetchContent() {
-    const response = await fetch("/api/content");
+    const response = await fetch(
+      `/api/content?page=${currentPage}&limit=${itemsPerPage}`
+    );
     const data = await response.json();
     setContentList(data.content);
+    setTotalPages(Math.ceil(data.total / itemsPerPage));
   }
 
   const handleCreateContent = async () => {
@@ -36,13 +75,13 @@ export default function ContentManagementPage() {
       const newContent = {
         title,
         description,
-        release_date: new Date(release_date).toISOString(), // Use the input date
+        release_date: new Date(release_date).toISOString(),
         genre,
         rating: Number(rating),
         content_type,
         duration: content_type === "movie" ? duration : null,
         episodes: content_type === "tv_show" ? episodes : null,
-        image_url, // Include image URL
+        image_url,
       };
 
       const response = await fetch("/api/content", {
@@ -76,7 +115,7 @@ export default function ContentManagementPage() {
         content_type,
         duration: content_type === "movie" ? duration : null,
         episodes: content_type === "tv_show" ? episodes : null,
-        image_url, // Include image URL
+        image_url,
       };
 
       const response = await fetch(
@@ -125,7 +164,7 @@ export default function ContentManagementPage() {
     setContentType(content.content_type);
     setDuration(content.duration);
     setEpisodes(content.episodes);
-    setImage_url(content.image_url); // Set image URL for update
+    setImage_url(content.image_url);
   };
 
   const resetForm = () => {
@@ -138,182 +177,213 @@ export default function ContentManagementPage() {
     setContentType("movie");
     setDuration(null);
     setEpisodes(null);
-    setImage_url(""); // Reset image URL
+    setImage_url("");
   };
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-4">Content Management</h1>
+      <h1 className="text-3xl font-bold mb-8">Content Management</h1>
 
-      <form className="mb-8 space-y-4">
-        <h2 className="text-xl font-bold">
-          {selectedContent ? "Update" : "Create"} Content
-        </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {selectedContent ? "Update" : "Create"} Content
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div>
+                <label className="block font-medium mb-1">Title</label>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
 
-        {/* Title */}
-        <div>
-          <label className="block font-medium">Title</label>
-          <input
-            type="text"
-            className="w-full px-4 py-2 border rounded text-black"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+              <div>
+                <label className="block font-medium mb-1">Description</label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
 
-        {/* Description */}
-        <div>
-          <label className="block font-medium">Description</label>
-          <textarea
-            className="w-full px-4 py-2 border rounded text-black"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
+              <div>
+                <label className="block font-medium mb-1">Release Date</label>
+                <Input
+                  type="date"
+                  value={release_date}
+                  onChange={(e) => setReleaseDate(e.target.value)}
+                />
+              </div>
 
-        {/* Release Date */}
-        <div>
-          <label className="block font-medium">Release Date</label>
-          <input
-            type="date"
-            className="w-full px-4 py-2 border rounded text-black"
-            value={release_date}
-            onChange={(e) => setReleaseDate(e.target.value)}
-          />
-        </div>
+              <div>
+                <label className="block font-medium mb-1">Genre</label>
+                <Input
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value)}
+                />
+              </div>
 
-        {/* Genre */}
-        <div>
-          <label className="block font-medium">Genre</label>
-          <input
-            type="text"
-            className="w-full px-4 py-2 border rounded text-black"
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-          />
-        </div>
+              <div>
+                <label className="block font-medium mb-1">Rating</label>
+                <Input
+                  type="number"
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                  min="0"
+                  max="10"
+                />
+              </div>
 
-        {/* Rating */}
-        <div>
-          <label className="block font-medium">Rating</label>
-          <input
-            type="number"
-            className="w-full px-4 py-2 border rounded text-black"
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            min="0"
-            max="10"
-          />
-        </div>
+              <div>
+                <label className="block font-medium mb-1">Image URL</label>
+                <Input
+                  value={image_url}
+                  onChange={(e) => setImage_url(e.target.value)}
+                  placeholder="Enter image URL"
+                />
+              </div>
 
-        {/* Image URL */}
-        <div>
-          <label className="block font-medium">Image URL</label>
-          <input
-            type="text"
-            className="w-full px-4 py-2 border rounded text-black"
-            value={image_url} // Image URL input
-            onChange={(e) => setImage_url(e.target.value)}
-            placeholder="Enter image URL"
-          />
-        </div>
+              <div>
+                <label className="block font-medium mb-1">Content Type</label>
+                <Select
+                  value={content_type}
+                  onValueChange={(value) => setContentType(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="movie">Movie</SelectItem>
+                    <SelectItem value="tv_show">TV Show</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-        {/* Type (Movie or TV Show) */}
-        <div>
-          <label className="block font-medium">Content Type</label>
-          <select
-            className="w-full px-4 py-2 border rounded text-black"
-            value={content_type}
-            onChange={(e) => setContentType(e.target.value)}
-          >
-            <option value="movie">Movie</option>
-            <option value="tv_show">TV Show</option>
-          </select>
-        </div>
+              {content_type === "movie" ? (
+                <div>
+                  <label className="block font-medium mb-1">Duration</label>
+                  <Input
+                    value={duration || ""}
+                    onChange={(e) => setDuration(e.target.value)}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block font-medium mb-1">Episodes</label>
+                  <Input
+                    type="number"
+                    value={episodes || ""}
+                    onChange={(e) => setEpisodes(Number(e.target.value))}
+                  />
+                </div>
+              )}
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button
+              onClick={
+                selectedContent ? handleUpdateContent : handleCreateContent
+              }
+            >
+              {selectedContent ? "Update Content" : "Create Content"}
+            </Button>
+            {selectedContent && (
+              <Button variant="outline" onClick={resetForm}>
+                Cancel
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
 
-        {/* Duration or Episodes */}
-        {content_type === "movie" ? (
-          <div>
-            <label className="block font-medium">Duration</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 border rounded text-black"
-              value={duration || ""}
-              onChange={(e) => setDuration(e.target.value)}
-            />
-          </div>
-        ) : (
-          <div>
-            <label className="block font-medium">Episodes</label>
-            <input
-              type="number"
-              className="w-full px-4 py-2 border rounded text-black"
-              value={episodes || ""}
-              onChange={(e) => setEpisodes(Number(e.target.value))}
-            />
-          </div>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Existing Content</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {contentList.map((content) => (
+                  <TableRow key={content.id}>
+                    <TableCell>{content.title}</TableCell>
+                    <TableCell>{content.content_type}</TableCell>
+                    <TableCell>{content.rating}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => selectContentForUpdate(content)}
+                        className="mr-2"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeleteContent(content.content_id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+          <CardFooter>
+            {totalPages > 0 ? (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                    />
+                  </PaginationItem>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(i + 1)}
+                        isActive={currentPage === i + 1}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            ) : (
+              <p>No pages available.</p> // Handle case where there are no pages
+            )}
+          </CardFooter>
+        </Card>
+      </div>
 
-        <button
-          type="button"
-          onClick={selectedContent ? handleUpdateContent : handleCreateContent}
-          className={`${
-            selectedContent ? "bg-yellow-500" : "bg-blue-500"
-          } text-white px-4 py-2`}
-        >
-          {selectedContent ? "Update Content" : "Create Content"}
-        </button>
-        {selectedContent && (
-          <button
-            type="button"
-            onClick={resetForm}
-            className="ml-4 bg-gray-500 text-white px-4 py-2"
-          >
-            Cancel
-          </button>
-        )}
-        <Button variant="outline" asChild className="w-full text-black">
+      <div className="mt-8 text-gray-700">
+        <Button variant="outline" asChild>
           <Link href="/user">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Profile
           </Link>
         </Button>
-      </form>
-
-      <h2 className="text-xl font-bold mb-4">Existing Content</h2>
-
-      <table className="w-full table-auto">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Type</th>
-            <th>Rating</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {contentList.map((content) => (
-            <tr key={content.id}>
-              <td>{content.title}</td>
-              <td>{content.content_type}</td>
-              <td>{content.rating}</td>
-              <td>
-                <button
-                  onClick={() => selectContentForUpdate(content)}
-                  className="bg-yellow-500 text-white px-4 py-2 mr-2"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={() => handleDeleteContent(content.content_id)}
-                  className="bg-red-500 text-white px-4 py-2"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </div>
     </div>
   );
 }

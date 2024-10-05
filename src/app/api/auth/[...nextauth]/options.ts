@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export const options: NextAuthOptions = {
   providers: [
@@ -80,11 +81,12 @@ export const options: NextAuthOptions = {
 
         // If user does not exist, create a new user
         if (!existingUser) {
+          const hashedPassword = await bcrypt.hash('12345678', 10);
           await prisma.users.create({
             data: {
               email: user.email,
               username: user.name ?? 'Unknown User',
-              password: '12345678', // You should replace this with a secure password generation logic
+              password: hashedPassword, // You should replace this with a secure password generation logic
               // image: user.image,
               // You can also include any additional fields you want
             },

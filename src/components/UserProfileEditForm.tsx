@@ -41,6 +41,7 @@ interface UserProfile {
   lastname: string | null;
 }
 
+// Define form schema with Zod
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Invalid email address"),
@@ -92,10 +93,14 @@ export default function UserProfileEditForm({
         throw new Error("Failed to update profile");
       }
 
+      console.log("Profile updated successfully!");
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
+
+      // Optionally navigate to the profile page or refresh the page
+      router.refresh();
     } catch (error) {
       toast({
         title: "Error",
@@ -127,6 +132,7 @@ export default function UserProfileEditForm({
       });
 
       logout(); // Redirect to home page after account deletion
+      router.push("/"); // Ensure redirect happens
     } catch (error) {
       toast({
         title: "Error",
@@ -177,7 +183,7 @@ export default function UserProfileEditForm({
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <Input {...field} type="" value={field.value ?? ""} />
+                <Input {...field} value={field.value ?? ""} />
               </FormControl>
               <FormDescription>
                 Optional: Enter your phone number with country code.
@@ -224,7 +230,9 @@ export default function UserProfileEditForm({
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete Account</Button>
+              <Button variant="destructive" disabled={isLoading}>
+                {isLoading ? "Deleting..." : "Delete Account"}
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>

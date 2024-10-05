@@ -25,10 +25,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+// Validation schema using Zod
 const formSchema = z
   .object({
     oldPassword: z.string().min(1, "Old password is required"),
@@ -75,10 +75,17 @@ export default function ChangePasswordPage() {
           title: "Password Changed",
           description: "Your password has been successfully updated.",
         });
-        router.push("/profile");
+        router.push("/user");
       } else {
         const data = await response.json();
-        throw new Error(data.message);
+        // Handle different response status codes
+        if (response.status === 401) {
+          throw new Error(data.message || "Unauthorized. Please log in again.");
+        } else if (response.status === 404) {
+          throw new Error(data.message || "User not found.");
+        } else {
+          throw new Error(data.message || "An unexpected error occurred.");
+        }
       }
     } catch (error) {
       toast({
@@ -88,6 +95,8 @@ export default function ChangePasswordPage() {
             ? error.message
             : "Failed to change password. Please try again.",
         variant: "destructive",
+        // Added aria-live attribute for better accessibility
+        "aria-live": "assertive",
       });
     } finally {
       setIsLoading(false);
@@ -111,7 +120,7 @@ export default function ChangePasswordPage() {
                   <FormItem>
                     <FormLabel>Old Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" {...field} aria-required="true" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -124,7 +133,7 @@ export default function ChangePasswordPage() {
                   <FormItem>
                     <FormLabel>New Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" {...field} aria-required="true" />
                     </FormControl>
                     <FormDescription>
                       Password must be at least 8 characters long.
@@ -140,7 +149,7 @@ export default function ChangePasswordPage() {
                   <FormItem>
                     <FormLabel>Confirm New Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" {...field} aria-required="true" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
