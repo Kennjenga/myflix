@@ -66,8 +66,9 @@ export default function ContentManagementPage() {
       `/api/content?page=${currentPage}&limit=${itemsPerPage}`
     );
     const data = await response.json();
+    console.log(data);
     setContentList(data.content);
-    setTotalPages(Math.ceil(data.total / itemsPerPage));
+    setTotalPages(Math.ceil(data.totalPages));
   }
 
   const handleCreateContent = async () => {
@@ -179,6 +180,8 @@ export default function ContentManagementPage() {
     setEpisodes(null);
     setImage_url("");
   };
+
+  console.log("pages", totalPages);
 
   return (
     <div className="container mx-auto p-8">
@@ -343,15 +346,17 @@ export default function ContentManagementPage() {
           <CardFooter>
             {totalPages > 0 ? (
               <Pagination>
+                {currentPage > 1 && (
+                  <PaginationPrevious
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                  >
+                    Previous
+                  </PaginationPrevious>
+                )}
                 <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                    />
-                  </PaginationItem>
-                  {[...Array(totalPages)].map((_, i) => (
+                  {Array.from({ length: totalPages }, (_, i) => (
                     <PaginationItem key={i}>
                       <PaginationLink
                         onClick={() => setCurrentPage(i + 1)}
@@ -361,17 +366,19 @@ export default function ContentManagementPage() {
                       </PaginationLink>
                     </PaginationItem>
                   ))}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                    />
-                  </PaginationItem>
                 </PaginationContent>
+                {currentPage < totalPages && (
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                  >
+                    Next
+                  </PaginationNext>
+                )}
               </Pagination>
             ) : (
-              <p>No pages available.</p> // Handle case where there are no pages
+              <p>No pages available.</p>
             )}
           </CardFooter>
         </Card>

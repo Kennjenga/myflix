@@ -6,34 +6,44 @@ export async function GET(request: Request) {
   const contentType = url.searchParams.get("content_type") || "";
   const search = url.searchParams.get("query") || "";
   const sort = url.searchParams.get("sort") || "";
+  const page = parseInt(url.searchParams.get("page") || "1");
+  const pageSize = parseInt(url.searchParams.get("limit") || "12");
 
   const filter: any = {};
   let orderBy: any = {};
 
-  // Apply content type filter if provided
   if (contentType) {
     filter.content_type = { equals: contentType };
   }
 
-  // Apply search filter (case-sensitive for now, or use lowercased approach)
   if (search) {
     filter.title = { contains: search };
   }
 
-  // Apply sorting if "top_rated" is requested
   if (sort === "top_rated") {
-    orderBy = { rating: "desc" }; // Sort by rating in descending order
+    orderBy = { rating: "desc" };
   }
 
   try {
-    // Fetch results with filter and sorting logic
-    const results = await prisma.content.findMany({
-      where: filter,  // Apply filters
-      orderBy: orderBy || undefined,  // Apply sorting (only if provided)
-      take: 10,  // Limit results to 10
+    const totalItems = await prisma.content.count({
+      where: filter,
     });
 
-    return NextResponse.json({ content: results });
+    const results = await prisma.content.findMany({
+      where: filter,
+      orderBy: orderBy || undefined,
+      take: pageSize,
+      skip: (page - 1) * pageSize, // Pagination logic
+    });
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return NextResponse.json({
+      content: results,
+      totalPages: totalPages,
+      currentPage: page,
+      totalItems: totalItems
+    });
   } catch (error) {
     console.error("Error fetching data:", error);
     return NextResponse.json(
@@ -42,6 +52,7 @@ export async function GET(request: Request) {
     );
   }
 }
+
 export async function POST(request: Request) {
   try {
     const { title, description, release_date, genre, rating, content_type, duration, episodes ,image_url} = await request.json();

@@ -37,6 +37,7 @@ export const ContentList = () => {
         content_type: contentType,
         sort,
         page: page.toString(),
+        limit: "15", // Adjust this value as needed for pagination
       })}`
     );
     if (!res.ok) throw new Error("Failed to fetch content");

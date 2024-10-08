@@ -23,7 +23,7 @@ export default function Home() {
         </div>
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black opacity-40 "></div>
+        <div className="absolute inset-0 bg-black opacity-40"></div>
 
         {/* Hero Content */}
         <div className="relative z-10 text-center ">
@@ -54,8 +54,8 @@ export default function Home() {
             <defs>
               <linearGradient id="gradient" gradientTransform="rotate(90)">
                 <stop offset="100%" stop-color="#0a001e" />
-                <stop offset="60%" stop-color="rgba(10, 0, 30, 1)" />
-                <stop offset="0%" stop-color="rgba(25, 0, 50, 1)" />
+                <stop offset="60%" stop-color="#17002F" />
+                <stop offset="0%" stop-color="#17002F" />
               </linearGradient>
             </defs>
             <path
