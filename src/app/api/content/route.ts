@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
 
+// GET: Fetch content by type, search query, sort order, and pagination
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const contentType = url.searchParams.get("content_type") || "";
@@ -53,6 +54,7 @@ export async function GET(request: Request) {
   }
 }
 
+// POST: Create new content item
 export async function POST(request: Request) {
   try {
     const { title, description, release_date, genre, rating, content_type, duration, episodes ,image_url} = await request.json();
@@ -83,51 +85,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Errpor creating content" }, { status: 500 });
   }
 }
-
-// //update content
-// export async function PUT(request: Request) {
-//   const { content_id, title, description, releaseDate, genre, rating, content_type, duration, episodes } = await request.json();
-
-//   if (!content_id) return NextResponse.json({ error: "Content ID is required." }, { status: 400 });
-
-//   try {
-//     const updatedContent = await prisma.content.update({
-//       where: { content_id },
-//       data: {
-//         title,
-//         description,
-//         release_date: new Date(releaseDate),
-//         genre,
-//         rating,
-//         content_type: type,
-//         duration: type === 'movie' ? duration : null,
-//         episodes: type === 'tv_show' ? episodes : null,
-//       },
-//     });
-
-//     return NextResponse.json({ content: updatedContent });
-//   } catch (error) {
-//     console.error("Error updating content:", error);
-//     return NextResponse.json({ error: "Error updating content" }, { status: 500 });
-//   }
-// }
-
-// //delete content
-// export async function DELETE(request: Request) {
-//   const content_id = Number(new URL(request.url).searchParams.get("id") || "");
-
-//   if (!content_id) return NextResponse.json({ error: "Content ID is required." }, { status: 400 });
-
-//   try {
-//     await prisma.content.delete({
-//       where: { content_id },
-//     });
-//     return NextResponse.json({ message: "Content deleted successfully" });
-//   } catch (error) {
-//     console.error("Error deleting content:", error);
-//     return NextResponse.json({ error: "Error deleting content" }, { status: 500 });
-//   }
-// }
 
 
 // const results = await prisma.$queryRaw`

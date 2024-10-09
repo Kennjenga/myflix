@@ -1,29 +1,10 @@
-import { options } from "../api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth/next";
 import Footer from "@/components/Footer";
 import Header from "@/components/header";
 import { ContentList } from "@/components/contentList";
-import { cookies } from "next/headers";
-import { decrypt } from "../../lib/session";
+import userService from "@/lib/user";
 
 const Page = async () => {
-  const session = await getServerSession(options);
-
-  let user;
-
-  if (session) {
-    // If session exists, use the user from the session
-    user = session.user;
-  } else {
-    // If no session, check the cookies for a session token
-    const sessionCookie = cookies().get("session");
-    if (sessionCookie) {
-      // Decrypt the session cookie to get user information
-      const decryptedSession = await decrypt(sessionCookie.value);
-      user = decryptedSession; // Assuming decryptedSession contains user info
-    }
-  }
-  console.log(session);
+  let user = await userService();
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

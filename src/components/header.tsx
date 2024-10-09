@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
@@ -99,13 +100,13 @@ const Header = ({ user }: Props) => {
 
   const UserAvatar = () => {
     if (user?.image) {
-      return (
-        <img
-          src={user.image}
-          alt={user.name || "User"}
-          className="w-8 h-8 rounded-full"
-        />
-      );
+      <Image
+        src={user.image}
+        alt={user.name || "User"}
+        width={32}
+        height={32}
+        className="w-8 h-8 rounded-full"
+      />;
     }
     return (
       <div className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-sm font-bold">

@@ -1,9 +1,8 @@
 import LoginForm from "@/components/loginform";
-import Link from "next/link";
 
 const page = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen w-9/10">
+    <div className="flex flex-column items-center justify-center min-h-screen w-9/10">
       <LoginForm />
     </div>
   );

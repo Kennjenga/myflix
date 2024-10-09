@@ -1,8 +1,5 @@
-import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/options";
-import { decrypt } from "@/lib/session";
+import UserService from "@/lib/user";
 import UserProfileEditForm from "@/components/UserProfileEditForm";
-import { cookies } from "next/headers";
 import { getCanonicalUrl } from "@/utils";
 import Link from "next/link";
 import { Metadata } from "next";
@@ -26,11 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default async function UserProfilePage() {
-  const session = await getServerSession(options);
-  const sessionCookie = cookies().get("session");
-  const user =
-    session?.user ||
-    (sessionCookie ? await decrypt(sessionCookie.value) : null);
+  let user = await UserService();
 
   if (!user) {
     return (

@@ -56,10 +56,7 @@ export const options: NextAuthOptions = {
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
-        // console.log("Redirect URL:", url);
-        // console.log("Base URL:", baseUrl);
-    
+    async redirect({ url, baseUrl }) {    
         // Check if the URL is the login page
         if (url === `${baseUrl}/login`) {
           return `${baseUrl}/content`; // Redirect to /content from /login

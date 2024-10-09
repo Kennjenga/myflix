@@ -7,6 +7,7 @@ import { ContentDetails } from "@/components/contentDetails";
 import { cookies } from "next/headers";
 import { decrypt } from "@/lib/session";
 import { getCanonicalUrl } from "@/utils";
+import userService from "@/lib/user";
 
 interface Content {
   image_url: string;
@@ -34,11 +35,7 @@ async function fetchContent(id: number): Promise<Content | null> {
 
 export default async function Page({ params }: { params: { id: string } }) {
   const contentId = Number(params.id);
-  const session = await getServerSession(options);
-  const sessionCookie = cookies().get("session");
-  const user =
-    session?.user ||
-    (sessionCookie ? await decrypt(sessionCookie.value) : null);
+  let user = await userService();
   const content = await fetchContent(contentId);
 
   if (!content) {

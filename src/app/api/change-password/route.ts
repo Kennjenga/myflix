@@ -8,6 +8,7 @@ import { decrypt } from '@/lib/session';
 
 const prisma = new PrismaClient();
 
+// change password by getting user Email from session
 export async function POST(req: Request) {
   const { oldPassword, newPassword } = await req.json();
 
