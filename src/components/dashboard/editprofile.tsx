@@ -1,5 +1,4 @@
-import UserService from "@/lib/user";
-import UserProfileEditForm from "@/components/UserProfileEditForm";
+// src/components/dashboard/editprofile.tsx
 import { getCanonicalUrl } from "@/utils";
 import Link from "next/link";
 import { Metadata } from "next";
@@ -7,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertCircle } from "lucide-react";
+import UserProfileEditForm from "../UserProfileEditForm";
 
 interface UserProfile {
   user_id: number;
@@ -15,6 +15,7 @@ interface UserProfile {
   phone_number: string | null;
   firstname: string | null;
   lastname: string | null;
+  role?: string | null;
 }
 
 export const metadata: Metadata = {
@@ -22,9 +23,12 @@ export const metadata: Metadata = {
   description: "Edit your MyFlix profile",
 };
 
-export default async function UserProfilePage() {
-  let user = await UserService();
+// Ensure this function runs as a server component
+interface UserProfilePageProps {
+  user: UserProfile;
+}
 
+export default async function UserProfilePage({ user }: UserProfilePageProps) {
   if (!user) {
     return (
       <Alert variant="destructive" className="max-w-md mx-auto mt-8">
@@ -47,7 +51,6 @@ export default async function UserProfilePage() {
   const response = await fetch(
     `${getCanonicalUrl()}/api/user?email=${user.email}`
   );
-  let userProfile: UserProfile | null = null;
 
   if (!response.ok) {
     return (
@@ -61,7 +64,7 @@ export default async function UserProfilePage() {
     );
   }
 
-  userProfile = await response.json();
+  const userProfile: UserProfile | null = await response.json();
 
   return (
     <div className="container mx-auto px-4 py-8 w-full">
@@ -77,9 +80,9 @@ export default async function UserProfilePage() {
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Content
               </Link>
             </Button>
-            {user.role == "admin" && (
+            {user.role === "admin" && (
               <Button variant="outline" asChild>
-                <Link href="/content/update"> Update & create content</Link>
+                <Link href="/content/update">Update & create content</Link>
               </Button>
             )}
             <p className="text-sm text-muted-foreground">
