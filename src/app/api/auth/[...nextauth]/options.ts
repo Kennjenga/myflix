@@ -83,7 +83,9 @@ export const options: NextAuthOptions = {
             data: {
               email: user.email,
               username: user.name ?? 'Unknown User',
-              password: hashedPassword, // You should replace this with a secure password generation logic
+              role: user.role ?? 'user',
+              password: hashedPassword,
+               // You should replace this with a secure password generation logic
               // image: user.image,
               // You can also include any additional fields you want
             },

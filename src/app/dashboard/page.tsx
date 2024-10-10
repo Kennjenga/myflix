@@ -2,9 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { Dashboard } from "@/components/dashboard/dash";
 
-// Example usage
 const App = () => {
   const [user, setUser] = useState<{
+    user_id: number;
+    username: string;
+    phone_number: string;
+    firstname: string;
+    lastname: string;
     name: string;
     email: string;
     role: string;
@@ -13,17 +17,33 @@ const App = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserSession = async () => {
       try {
-        const response = await fetch("/api/user/session"); // Adjust the path if necessary
-        if (response.ok) {
-          const data = await response.json();
-          console.log("User fetched:", data);
-          setUser({
-            name: data.name || "N/A",
-            email: data.email || "N/A",
-            role: data.role || "user", // Set a default role if it's missing
-          });
+        // Fetch user session to get the email
+        const sessionResponse = await fetch("/api/user/session");
+        const sessionData = await sessionResponse.json();
+
+        if (sessionResponse.ok && sessionData.email) {
+          // Now fetch the user details using the email
+          const userResponse = await fetch(
+            `/api/user?email=${sessionData.email}`
+          );
+          const userData = await userResponse.json();
+
+          if (userResponse.ok) {
+            setUser({
+              user_id: Number(userData.user_id),
+              username: userData.username || "N/A",
+              phone_number: userData.phone_number || "N/A",
+              firstname: userData.firstname || "N/A",
+              lastname: userData.lastname || "N/A",
+              name: userData.name || "N/A",
+              email: userData.email || "N/A",
+              role: userData.role || "user",
+            });
+          } else {
+            setError(userData.error || "Failed to fetch user details");
+          }
         } else {
           setError("Failed to fetch user session");
         }
@@ -34,8 +54,9 @@ const App = () => {
       }
     };
 
-    fetchUser();
+    fetchUserSession();
   }, []);
+  // console.log(user);
 
   if (loading) {
     return <div>Loading...</div>;

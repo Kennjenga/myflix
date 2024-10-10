@@ -1,94 +1,175 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  User,
+  Settings,
+  CreditCard,
+  ArrowLeft,
+  LogOut,
+  Users,
+  FileText,
+  Layers,
+  Menu,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { logout } from "@/app/actions/auth";
+
+import Profile from "./profile";
+import EditProfile from "./editprofile";
+import Subscriptions from "@/components/dashboard/subscriptions";
+import AllUsers from "@/components/dashboard/all-users";
+import UpdateContent from "./update-content";
+import AllSubscriptions from "@/components/dashboard/all-subscriptions";
+
 interface User {
   name: string;
   role: string;
+  email: string;
+  user_id: number;
+  username: string;
+  phone_number: string;
+  firstname: string;
+  lastname: string;
 }
 
-const Profile = ({ user }: { user: User }) => (
-  <div>Profile Content {user.name}</div>
-);
-const EditProfile = () => <div>Edit Profile Content</div>;
-const Subscriptions = () => <div>Subscriptions Content</div>;
-const Back = () => <div>Back Content</div>;
-const Logout = () => <div>Logout Content</div>;
-const DeleteAccount = () => <div>Delete Account Content</div>;
-const AllUsers = () => <div>All Users Content</div>;
-const UpdateContent = () => <div>Update Content</div>;
-const AllSubscriptions = () => <div>All Subscriptions Content</div>;
-
-interface DashboardProps {
-  user: User;
+interface NavItem {
+  label: string;
+  icon: React.ElementType;
+  component: React.ReactNode;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ user }) => {
-  const [activeComponent, setActiveComponent] = React.useState(null);
-  const handleComponentChange = (component: React.ReactNode) => {
-    if (component) {
-      setActiveComponent(component as any);
-    }
+export const Dashboard: React.FC<{ user: User }> = ({ user }) => {
+  const [activeComponent, setActiveComponent] =
+    React.useState<React.ReactNode | null>(null);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
   };
 
+  const commonNavItems: NavItem[] = [
+    { label: "Profile", icon: User, component: <Profile user={user} /> },
+    {
+      label: "Edit Profile",
+      icon: Settings,
+      component: <EditProfile user={user} />,
+    },
+    {
+      label: "Subscriptions",
+      icon: CreditCard,
+      component: <Subscriptions user={user} />,
+    },
+  ];
+
+  const adminNavItems: NavItem[] = [
+    { label: "All Users", icon: Users, component: <AllUsers /> },
+    { label: "Update Content", icon: FileText, component: <UpdateContent /> },
+    {
+      label: "All Subscriptions",
+      icon: Layers,
+      component: <AllSubscriptions />,
+    },
+  ];
+
+  const navItems =
+    user.role === "admin"
+      ? [...commonNavItems, ...adminNavItems]
+      : commonNavItems;
+
+  const handleComponentChange = (component: React.ReactNode) => {
+    setActiveComponent(component);
+  };
+
+  const Sidebar = () => (
+    <ScrollArea className="h-full py-6 pl-4 pr-6">
+      <nav className="space-y-2">
+        {navItems.map((item) => (
+          <Button
+            key={item.label}
+            variant="ghost"
+            className="w-full justify-start text-base font-normal"
+            onClick={() => handleComponentChange(item.component)}
+          >
+            <item.icon className="mr-2 h-5 w-5" />
+            {item.label}
+          </Button>
+        ))}
+      </nav>
+      <div className="mt-28 text-black space-y-2">
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Back
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-5 w-5" />
+          Logout
+        </Button>
+      </div>
+    </ScrollArea>
+  );
+
   return (
-    <div style={{ display: "flex" }}>
-      <aside style={{ width: "200px", borderRight: "1px solid #ccc" }}>
-        {user.role !== "admin" ? (
-          <>
-            <button
-              onClick={() => handleComponentChange(<Profile user={user} />)}
-            >
-              Profile
-            </button>
-            <button onClick={() => handleComponentChange(<EditProfile />)}>
-              Edit Profile
-            </button>
-            <button onClick={() => handleComponentChange(<Subscriptions />)}>
-              Subscriptions
-            </button>
-            <button onClick={() => handleComponentChange(<Back />)}>
-              Back
-            </button>
-            <button onClick={() => handleComponentChange(<Logout />)}>
-              Logout
-            </button>
-            <button onClick={() => handleComponentChange(<DeleteAccount />)}>
-              Delete Account
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => handleComponentChange(<Profile user={user} />)}
-            >
-              Profile
-            </button>
-            <button onClick={() => handleComponentChange(<EditProfile />)}>
-              Edit Profile
-            </button>
-            <button onClick={() => handleComponentChange(<Subscriptions />)}>
-              Subscriptions
-            </button>
-            <button onClick={() => handleComponentChange(<Back />)}>
-              Back
-            </button>
-            <button onClick={() => handleComponentChange(<Logout />)}>
-              Logout
-            </button>
-            <button onClick={() => handleComponentChange(<DeleteAccount />)}>
-              Delete Account
-            </button>
-            <button onClick={() => handleComponentChange(<AllUsers />)}>
-              All Users
-            </button>
-            <button onClick={() => handleComponentChange(<UpdateContent />)}>
-              Update Content
-            </button>
-            <button onClick={() => handleComponentChange(<AllSubscriptions />)}>
-              All Subscriptions
-            </button>
-          </>
-        )}
+    <div className="flex h-screen w-full">
+      {/* Sidebar for larger screens */}
+      <aside className="hidden w-64 border-r lg:block">
+        <Sidebar />
       </aside>
-      <main style={{ padding: "20px" }}>{activeComponent}</main>
+
+      {/* Main content */}
+      <main className="flex-1 overflow-auto">
+        <div className="flex items-center justify-between border-b p-4">
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0 text-black">
+              <SheetHeader className="p-6 ">
+                <SheetTitle>Dashboard Menu</SheetTitle>
+              </SheetHeader>
+              <Sidebar />
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="p-6">
+          {activeComponent || (
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold mb-4">
+                Welcome, {user.username}!
+              </h2>
+              <p className="text-gray-600">
+                Select an option from the sidebar to get started.
+              </p>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
+
+export default Dashboard;
