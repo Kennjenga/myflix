@@ -26,6 +26,7 @@ async function fetchContent(id: number): Promise<Content | null> {
   try {
     const res = await fetch(`${getCanonicalUrl()}/api/content/${id}`);
     if (!res.ok) throw new Error("Failed to fetch content");
+    console.log(getCanonicalUrl());
     return await res.json();
   } catch (error) {
     console.error("Error fetching content:", error);
