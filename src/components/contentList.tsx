@@ -83,9 +83,7 @@ export const ContentList = () => {
               imageUrl={
                 item.image_url
                   ? item.image_url
-                  : `/assets/${item.title
-                      .replace(/\s/g, "-")
-                      .toLowerCase()}.jfif`
+                  : `/assets/${encodeURIComponent(item.title)}.jfif`
               }
             />
           ))

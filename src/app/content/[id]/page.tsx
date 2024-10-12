@@ -59,7 +59,10 @@ function ContentHero({ content }: { content: Content }) {
       style={{ height: "56.25vw", maxHeight: "80vh" }}
     >
       <Image
-        src={content.image_url || `/assets/${content.title}.jfif`}
+        src={
+          content.image_url ||
+          `/assets/${encodeURIComponent(content.title)}.jfif`
+        }
         alt={content.title}
         fill
         priority
