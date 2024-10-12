@@ -81,7 +81,11 @@ export const ContentList = () => {
               releaseYear={new Date(item.release_date).getFullYear()}
               rating={item.rating}
               imageUrl={
-                item.image_url ? item.image_url : `/assets/${item.title}.jfif`
+                item.image_url
+                  ? item.image_url
+                  : `/assets/${item.title
+                      .replace(/\s/g, "-")
+                      .toLowerCase()}.jfif`
               }
             />
           ))

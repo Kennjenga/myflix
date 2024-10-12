@@ -1,11 +1,7 @@
-import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/options";
 import Header from "@/components/header";
 import Image from "next/image";
 import { CalendarDays, Clock, Film, Tv, Play } from "lucide-react";
 import { ContentDetails } from "@/components/contentDetails";
-import { cookies } from "next/headers";
-import { decrypt } from "@/lib/session";
 import { getCanonicalUrl } from "@/utils";
 import userService from "@/lib/user";
 
@@ -26,7 +22,6 @@ async function fetchContent(id: number): Promise<Content | null> {
   try {
     const res = await fetch(`${getCanonicalUrl()}/api/content/${id}`);
     if (!res.ok) throw new Error("Failed to fetch content");
-    console.log(getCanonicalUrl());
     return await res.json();
   } catch (error) {
     console.error("Error fetching content:", error);
@@ -34,10 +29,11 @@ async function fetchContent(id: number): Promise<Content | null> {
   }
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const contentId = Number(params.id);
+export default async function Page({ params }: { params: { id: number } }) {
+  const contentId = params.id;
   let user = await userService();
   const content = await fetchContent(contentId);
+  console.log(content);
 
   if (!content) {
     return (
