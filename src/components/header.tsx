@@ -1,11 +1,11 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
 import ProfileMenu from "@/components/profilemenu";
+import { Search, Menu } from "lucide-react";
 
 interface SearchResult {
   content_id: number;
@@ -33,6 +33,7 @@ const Header = ({ user }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [isSearchBarVisible, setIsSearchBarVisible] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -90,6 +91,7 @@ const Header = ({ user }: Props) => {
     router.push(`/content/${result.content_id}`);
     setSearchQuery(result.title);
     setIsDropdownVisible(false);
+    setIsSearchBarVisible(false);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,13 +102,15 @@ const Header = ({ user }: Props) => {
 
   const UserAvatar = () => {
     if (user?.image) {
-      <Image
-        src={user.image}
-        alt={user.name || "User"}
-        width={32}
-        height={32}
-        className="w-8 h-8 rounded-full"
-      />;
+      return (
+        <Image
+          src={user.image}
+          alt={user.name || "User"}
+          width={32}
+          height={32}
+          className="w-8 h-8 rounded-full"
+        />
+      );
     }
     return (
       <div className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-sm font-bold">
@@ -115,61 +119,68 @@ const Header = ({ user }: Props) => {
     );
   };
 
+  const toggleSearchBar = () => {
+    setIsSearchBarVisible(!isSearchBarVisible);
+  };
+
   return (
-    <div className="w-full p-3 mx-auto sm:mx-2 flex flex-row z-10">
+    <div className="w-full p-3 mx-auto sm:mx-2 flex flex-col z-10">
       <div className="flex justify-between items-center w-full">
-        {/* Left Section - MYFLIX */}
+        {/* Left Section - Menu Icon (on small screens) and MYFLIX */}
         <div className="flex items-center">
+          <button
+            className="mr-2 lg:hidden text-white"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
+            <Menu size={24} />
+          </button>
           <Link href="/" className="text-white text-2xl font-bold">
             MYFLIX
           </Link>
         </div>
 
+        {/* Center Section - Navigation (on large screens) */}
+        <nav className={`hidden lg:flex`}>
+          <ul className="flex space-x-6">
+            <li>
+              <Link
+                href="/content"
+                className="block hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <button
+                className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
+                onClick={() => handleFilter("content_type", "movie")}
+              >
+                Movies
+              </button>
+            </li>
+            <li>
+              <button
+                className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
+                onClick={() => handleFilter("content_type", "tv_show")}
+              >
+                TV Shows
+              </button>
+            </li>
+            <li>
+              <button
+                className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
+                onClick={() => handleFilter("sort", "top_rated")}
+              >
+                Top IMDB
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Right Section - Search (on large screens), Search Icon (on small screens), and Profile Menu */}
         <div className="flex items-center">
-          <nav className={`hidden lg:flex ml-6`}>
-            <ul className="flex space-x-6">
-              <li>
-                <Link
-                  href="/content"
-                  className="block hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <button
-                  className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
-                  onClick={() => handleFilter("content_type", "movie")}
-                >
-                  Movies
-                </button>
-              </li>
-              <li>
-                <button
-                  className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
-                  onClick={() => handleFilter("content_type", "tv_show")}
-                >
-                  TV Shows
-                </button>
-              </li>
-              <li>
-                <button
-                  className="hover:bg-violet-700 active:bg-violet-700 rounded-lg p-2 transition duration-300"
-                  onClick={() => handleFilter("sort", "top_rated")}
-                >
-                  Top IMDB
-                </button>
-              </li>
-            </ul>
-          </nav>
-          <button
-            className="ml-4 lg:hidden text-white"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            ☰
-          </button>
-          <div className="relative ml-4" ref={dropdownRef}>
+          <div className="relative hidden md:block" ref={dropdownRef}>
             <input
               type="text"
               placeholder="Search for movies..."
@@ -196,12 +207,15 @@ const Header = ({ user }: Props) => {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Right Section - Profile Menu */}
-        <div className="flex items-center">
+          <button
+            className="ml-4 md:hidden text-white"
+            onClick={toggleSearchBar}
+            aria-label="Toggle search"
+          >
+            <Search size={24} />
+          </button>
           {user ? (
-            <div className="relative" ref={profileMenuRef}>
+            <div className="relative ml-4" ref={profileMenuRef}>
               <button
                 className="flex items-center space-x-2 focus:outline-none"
                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
@@ -213,7 +227,7 @@ const Header = ({ user }: Props) => {
               {isProfileMenuOpen && <ProfileMenu />}
             </div>
           ) : (
-            <Link href="/login">
+            <Link href="/login" className="ml-4">
               <button className="bg-white text-blue-900 px-4 py-1 rounded-xl hover:bg-gray-200 transition duration-300">
                 Login
               </button>
@@ -221,6 +235,35 @@ const Header = ({ user }: Props) => {
           )}
         </div>
       </div>
+
+      {/* Mobile Search Bar */}
+      {isSearchBarVisible && (
+        <div className="mt-4 w-full md:hidden" ref={dropdownRef}>
+          <input
+            type="text"
+            placeholder="Search for movies..."
+            className="w-full px-4 py-2 rounded-md text-black"
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+          {isDropdownVisible && searchResults.length > 0 && (
+            <div className="absolute left-0 w-full mt-1 bg-white rounded-md shadow-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+              {searchResults.map((result) => (
+                <div
+                  key={result.content_id}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-lg"
+                  onClick={() => handleResultClick(result)}
+                >
+                  <p className="text-sm font-medium text-gray-900">
+                    {result.title}
+                  </p>
+                  <p className="text-xs text-gray-500">{result.content_type}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Mobile Navigation */}
       {isOpen && (
