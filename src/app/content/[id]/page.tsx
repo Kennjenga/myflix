@@ -61,7 +61,7 @@ function ContentHero({ content }: { content: Content }) {
       <Image
         src={
           content.image_url ||
-          `/assets/${encodeURIComponent(content.title)}.jfif`
+          `/assets/${encodeURIComponent(content.title)}.webp`
         }
         alt={content.title}
         fill

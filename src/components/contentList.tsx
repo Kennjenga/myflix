@@ -83,7 +83,7 @@ export const ContentList = () => {
               imageUrl={
                 item.image_url
                   ? item.image_url
-                  : `/assets/${encodeURIComponent(item.title)}.jfif`
+                  : `/assets/${encodeURIComponent(item.title)}.webp`
               }
             />
           ))
