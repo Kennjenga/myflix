@@ -99,37 +99,26 @@ export async function updateSession() {
   return payload;
 }
 
-// Delete the session cookie
 export async function deleteSession() {
   try {
     const cookieStore = cookies();
-    const cookieNames = [
-      'session',
-      'next-auth.session-token',
-      'next-auth.callback-url',
-      'next-auth.csrf-token',
-      '__Host-next-auth.csrf-token',
-      '__Secure-next-auth.callback-url',
-      '__Secure-next-auth.pkce.code_verifier',
-      '__Secure-next-auth.session-token',
-    ];
+    const allCookies = cookieStore.getAll();
 
-    cookieNames.forEach((name) => {
+    allCookies.forEach((cookie) => {
       cookieStore.delete({
-        name,
+        name: cookie.name,
         path: '/',
-        // Use a domain that matches your Vercel deployment
-        domain: process.env.NEXT_PUBLIC_DOMAIN || undefined,
-        secure: process.env.NODE_ENV === 'production',
+        domain: 'myflix-amber.vercel.app',
+        secure: true,
         httpOnly: true,
         sameSite: 'lax'
       });
     });
 
-    console.log('All session cookies deleted successfully');
-    return { success: true, message: 'Logout successful' };
+    console.log(`Deleted ${allCookies.length} cookies`);
+    return { success: true, message: 'All cookies deleted successfully' };
   } catch (error) {
-    console.error('Error deleting session:', error);
-    throw new Error('Failed to delete session');
+    console.error('Error deleting cookies:', error);
+    throw new Error('Failed to delete cookies');
   }
 }
