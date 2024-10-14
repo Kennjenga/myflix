@@ -68,7 +68,7 @@ export const ContentList = () => {
 
   return (
     <>
-      <div className="w-9/10 my-3 mx-2 grid grid-cols-2 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="w-9/10 my-3 grid grid-cols-2 card-range sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {loading ? (
           <p>Loading...</p>
         ) : content.length > 0 ? (

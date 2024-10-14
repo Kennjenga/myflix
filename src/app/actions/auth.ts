@@ -4,7 +4,7 @@ import { FormState, LoginFormState, LoginSchema, SignupFormSchema } from '@/lib/
 import bcrypt from 'bcryptjs';
 import prisma from '../../lib/prisma';
 import { createSession, deleteSession } from '../../lib/session';
-import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 export async function login(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
   const validatedFields = LoginSchema.safeParse({
@@ -119,13 +119,15 @@ export async function signup(
   }
 }
 
-import { NextApiRequest, NextApiResponse } from 'next';
 
-export async function logout(req: NextApiRequest, res: NextApiResponse) {
-  // Clear the session from the store
+export async function logout() {
+  // Clear session from session store
   await deleteSession();
-  // Clear cookies from the browser
-  res.setHeader('Set-Cookie', 'session=; Max-Age=0; Path=/; HttpOnly');
-  // Redirect the user
-  res.redirect('/');
+
+  // Clear the cookie using Next.js headers utility
+  const cookieStore = cookies();
+  cookieStore.set('session', '', { maxAge: 0 });
+
+  // Redirect to home
+  return { redirect: '/' };
 }

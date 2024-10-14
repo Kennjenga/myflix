@@ -10,6 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, CreditCard, Package, AlertCircle } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface User {
   user_id: number;
@@ -55,7 +63,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        setSubscriptions(data);
+        setSubscriptions(data.subscriptions);
       } catch (err) {
         setError("Failed to fetch subscriptions");
       } finally {
@@ -113,6 +121,8 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
     );
   }
 
+  const subscription = subscriptions[0];
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Your Subscriptions</h1>
@@ -125,7 +135,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
           </CardContent>
         </Card>
       ) : (
-        subscriptions.map((subscription) => (
+        <>
           <Card key={subscription.sub_id} className="w-full">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -169,7 +179,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
                   <div>
                     <p className="text-sm text-muted-foreground">Cost</p>
                     <p className="font-medium">
-                      ${subscription.subscription_type.cost}
+                      ${Number(subscription.subscription_type.cost).toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -188,7 +198,36 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
               </div>
             </CardContent>
           </Card>
-        ))
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription History</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Subscription Type</TableHead>
+                    <TableHead>Start Date</TableHead>
+                    <TableHead>End Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Cost</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center text-muted-foreground"
+                    >
+                      No previous subscriptions found.
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,19 +53,20 @@ export default function ContentManagementPage() {
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
 
   const router = useRouter();
 
   const fetchContent = useCallback(async () => {
     const response = await fetch(
-      `/api/content?page=${currentPage}&limit=${itemsPerPage}`
+      `/api/content?page=${currentPage}&limit=${itemsPerPage}&query=${searchQuery}`
     );
     const data = await response.json();
     console.log(data);
     setContentList(data.content);
     setTotalPages(Math.ceil(data.totalPages));
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   useEffect(() => {
     fetchContent();
@@ -181,208 +182,215 @@ export default function ContentManagementPage() {
     setImage_url("");
   };
 
-  console.log("pages", totalPages);
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchContent();
+  };
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto p-8 max-w-full">
       <h1 className="text-3xl font-bold mb-8">Content Management</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {selectedContent ? "Update" : "Create"} Content
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-4">
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Existing Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex mb-4">
+            <Input
+              placeholder="Search content..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="mr-2"
+            />
+            <Button onClick={handleSearch}>
+              <Search className="h-4 w-4 mr-2" />
+              Search
+            </Button>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {contentList.map((content) => (
+                <TableRow key={content.id}>
+                  <TableCell>{content.title}</TableCell>
+                  <TableCell>{content.content_type}</TableCell>
+                  <TableCell>{content.rating}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => selectContentForUpdate(content)}
+                      className="mr-2"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleDeleteContent(content.content_id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+        <CardFooter>
+          {totalPages > 0 ? (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  {currentPage > 1 && (
+                    <PaginationPrevious
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                    />
+                  )}
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(i + 1)}
+                      isActive={currentPage === i + 1}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => {
+                      if (currentPage < totalPages) {
+                        setCurrentPage((prev) =>
+                          Math.min(prev + 1, totalPages)
+                        );
+                      }
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          ) : (
+            <p>No pages available.</p>
+          )}
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{selectedContent ? "Update" : "Create"} Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4">
+            <div>
+              <label className="block font-medium mb-1">Title</label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Description</label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Release Date</label>
+              <Input
+                type="date"
+                value={release_date}
+                onChange={(e) => setReleaseDate(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Genre</label>
+              <Input value={genre} onChange={(e) => setGenre(e.target.value)} />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Rating</label>
+              <Input
+                type="number"
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+                min="0"
+                max="10"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Image URL</label>
+              <Input
+                value={image_url}
+                onChange={(e) => setImage_url(e.target.value)}
+                placeholder="Enter image URL"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Content Type</label>
+              <Select
+                value={content_type}
+                onValueChange={(value) => setContentType(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="movie">Movie</SelectItem>
+                  <SelectItem value="tv_show">TV Show</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {content_type === "movie" ? (
               <div>
-                <label className="block font-medium mb-1">Title</label>
+                <label className="block font-medium mb-1">Duration</label>
                 <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={duration || ""}
+                  onChange={(e) => setDuration(e.target.value)}
                 />
               </div>
-
+            ) : (
               <div>
-                <label className="block font-medium mb-1">Description</label>
-                <Textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1">Release Date</label>
-                <Input
-                  type="date"
-                  value={release_date}
-                  onChange={(e) => setReleaseDate(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1">Genre</label>
-                <Input
-                  value={genre}
-                  onChange={(e) => setGenre(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1">Rating</label>
+                <label className="block font-medium mb-1">Episodes</label>
                 <Input
                   type="number"
-                  value={rating}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  min="0"
-                  max="10"
+                  value={episodes || ""}
+                  onChange={(e) => setEpisodes(Number(e.target.value))}
                 />
               </div>
-
-              <div>
-                <label className="block font-medium mb-1">Image URL</label>
-                <Input
-                  value={image_url}
-                  onChange={(e) => setImage_url(e.target.value)}
-                  placeholder="Enter image URL"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1">Content Type</label>
-                <Select
-                  value={content_type}
-                  onValueChange={(value) => setContentType(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="movie">Movie</SelectItem>
-                    <SelectItem value="tv_show">TV Show</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {content_type === "movie" ? (
-                <div>
-                  <label className="block font-medium mb-1">Duration</label>
-                  <Input
-                    value={duration || ""}
-                    onChange={(e) => setDuration(e.target.value)}
-                  />
-                </div>
-              ) : (
-                <div>
-                  <label className="block font-medium mb-1">Episodes</label>
-                  <Input
-                    type="number"
-                    value={episodes || ""}
-                    onChange={(e) => setEpisodes(Number(e.target.value))}
-                  />
-                </div>
-              )}
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button
-              onClick={
-                selectedContent ? handleUpdateContent : handleCreateContent
-              }
-            >
-              {selectedContent ? "Update Content" : "Create Content"}
+            )}
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button
+            onClick={
+              selectedContent ? handleUpdateContent : handleCreateContent
+            }
+          >
+            {selectedContent ? "Update Content" : "Create Content"}
+          </Button>
+          {selectedContent && (
+            <Button variant="outline" onClick={resetForm}>
+              Cancel
             </Button>
-            {selectedContent && (
-              <Button variant="outline" onClick={resetForm}>
-                Cancel
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Existing Content</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Rating</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {contentList.map((content) => (
-                  <TableRow key={content.id}>
-                    <TableCell>{content.title}</TableCell>
-                    <TableCell>{content.content_type}</TableCell>
-                    <TableCell>{content.rating}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => selectContentForUpdate(content)}
-                        className="mr-2"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleDeleteContent(content.content_id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter>
-            {totalPages > 0 ? (
-              <Pagination>
-                {currentPage > 1 && (
-                  <PaginationPrevious
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                  >
-                    Previous
-                  </PaginationPrevious>
-                )}
-                <PaginationContent>
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        onClick={() => setCurrentPage(i + 1)}
-                        isActive={currentPage === i + 1}
-                      >
-                        {i + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                </PaginationContent>
-                {currentPage < totalPages && (
-                  <PaginationNext
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                  >
-                    Next
-                  </PaginationNext>
-                )}
-              </Pagination>
-            ) : (
-              <p>No pages available.</p>
-            )}
-          </CardFooter>
-        </Card>
-      </div>
+          )}
+        </CardFooter>
+      </Card>
 
       <div className="mt-8 text-gray-700">
         <Button variant="outline" asChild>

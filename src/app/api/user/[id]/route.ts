@@ -1,6 +1,6 @@
 // src/app/api/users/[email]/route.ts
 import { NextResponse } from 'next/server';
-import prisma from "../../../../lib/prisma";
+import prisma from "@/lib/prisma";
 
 //update by id
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
