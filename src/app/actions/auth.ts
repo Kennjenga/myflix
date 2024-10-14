@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { createSession, deleteSession } from '@/lib/session';
 import { cookies } from 'next/headers';
-import router from 'next/router';
 
 export async function login(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
   const validatedFields = LoginSchema.safeParse({
@@ -122,13 +121,12 @@ export async function signup(
 
 export async function logout() {
   try {
-    const result = await deleteSession();
-    if (result.success) {
-      // Clear any client-side state if necessary
-      router.push('/login'); // or your preferred post-logout destination
-    }
+    // Clear session from session store
+    await deleteSession();
+    // Redirect to home
+    return { redirect: '/' };
   } catch (error) {
-    console.error('Logout failed:', error);
-    // Handle error (e.g., show an error message to the user)
+    console.error('Error deleting session:', error);
+    throw new Error('Failed to delete session');
   }
 }
