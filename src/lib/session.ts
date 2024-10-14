@@ -108,7 +108,7 @@ export async function deleteSession() {
       cookieStore.delete({
         name: cookie.name,
         path: '/',
-        domain: 'myflix-amber.vercel.app',
+        domain: '',
         secure: true,
         httpOnly: true,
         sameSite: 'lax'
