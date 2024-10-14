@@ -108,6 +108,12 @@ export function deleteSession() {
     cookies().delete('next-auth.session-token');
     cookies().delete('next-auth.callback-url');
     cookies().delete('next-auth.csrf-token');
+
+    // Delete secure NextAuth cookies
+    cookies().delete('__Host-next-auth.csrf-token');
+    cookies().delete('__Secure-next-auth.callback-url');
+    cookies().delete('__Secure-next-auth.pkce.code_verifier'); // Delete the PKCE code verifier
+    cookies().delete('__Secure-next-auth.session-token'); // Delete the secure session token
   } catch (error) {
     console.error('Error deleting session:', error);
     throw new Error('Failed to delete session');
