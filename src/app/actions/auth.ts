@@ -121,13 +121,20 @@ export async function signup(
 
 
 export async function logout() {
-  // Clear session from session store
-  await deleteSession();
+  try {
+    const cookieStore = cookies();
+    
+    // Clear all cookies (retrieve all cookies and clear them)
+    cookieStore.getAll().forEach(cookie => {
+      cookieStore.set(cookie.name, '', { maxAge: 0 });
+    });
 
-  // Clear the cookie using Next.js headers utility
-  const cookieStore = cookies();
-  cookieStore.set('session', '', { maxAge: 0 });
-
-  // Redirect to home
-  return { redirect: '/' };
+    return { redirect: '/' };
+  } catch (error) {
+    console.error('Error logging out:', error);
+    return {
+      success: false,
+      message: 'An error occurred while logging out.',
+    };
+  }
 }
