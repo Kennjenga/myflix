@@ -135,9 +135,8 @@ export async function logout() {
       '__Secure-next-auth.pkce.code_verifier',
       '__Secure-next-auth.session-token',
     ];
-
     cookieNames.forEach((name) => {
-      cookies().delete(name);
+      cookies().delete(name); // Adjust path and domain if necessary
     });
 
     // Redirect to home

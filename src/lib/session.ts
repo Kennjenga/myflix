@@ -100,20 +100,34 @@ export async function updateSession() {
 }
 
 // Delete the session cookie
-export function deleteSession() {
+export async function deleteSession() {
   try {
-    // Delete custom session cookie
-    cookies().delete('session');
-    // Delete NextAuth cookies
-    cookies().delete('next-auth.session-token');
-    cookies().delete('next-auth.callback-url');
-    cookies().delete('next-auth.csrf-token');
+    const cookieStore = cookies();
+    const cookieNames = [
+      'session',
+      'next-auth.session-token',
+      'next-auth.callback-url',
+      'next-auth.csrf-token',
+      '__Host-next-auth.csrf-token',
+      '__Secure-next-auth.callback-url',
+      '__Secure-next-auth.pkce.code_verifier',
+      '__Secure-next-auth.session-token',
+    ];
 
-    // Delete secure NextAuth cookies
-    cookies().delete('__Host-next-auth.csrf-token');
-    cookies().delete('__Secure-next-auth.callback-url');
-    cookies().delete('__Secure-next-auth.pkce.code_verifier'); // Delete the PKCE code verifier
-    cookies().delete('__Secure-next-auth.session-token'); // Delete the secure session token
+    cookieNames.forEach((name) => {
+      cookieStore.delete({
+        name,
+        path: '/',
+        // Use a domain that matches your Vercel deployment
+        domain: process.env.NEXT_PUBLIC_DOMAIN || undefined,
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax'
+      });
+    });
+
+    console.log('All session cookies deleted successfully');
+    return { success: true, message: 'Logout successful' };
   } catch (error) {
     console.error('Error deleting session:', error);
     throw new Error('Failed to delete session');
