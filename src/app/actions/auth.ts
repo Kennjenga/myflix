@@ -119,7 +119,13 @@ export async function signup(
   }
 }
 
-export async function logout() {
-  await deleteSession()
-  redirect('/')
+import { NextApiRequest, NextApiResponse } from 'next';
+
+export async function logout(req: NextApiRequest, res: NextApiResponse) {
+  // Clear the session from the store
+  await deleteSession();
+  // Clear cookies from the browser
+  res.setHeader('Set-Cookie', 'session=; Max-Age=0; Path=/; HttpOnly');
+  // Redirect the user
+  res.redirect('/');
 }
