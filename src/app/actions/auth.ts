@@ -120,9 +120,30 @@ export async function signup(
 }
 
 export async function logout() {
-  // Clear session from session store
-  await deleteSession();
+  try {
+    // Clear session from session store
+    await deleteSession();
 
-  // Redirect to home
-  return { redirect: '/' };
+    // Delete all cookies
+    const cookieNames = [
+      'session',
+      'next-auth.session-token',
+      'next-auth.callback-url',
+      'next-auth.csrf-token',
+      '__Host-next-auth.csrf-token',
+      '__Secure-next-auth.callback-url',
+      '__Secure-next-auth.pkce.code_verifier',
+      '__Secure-next-auth.session-token',
+    ];
+
+    cookieNames.forEach((name) => {
+      cookies().delete(name);
+    });
+
+    // Redirect to home
+    return { redirect: '/' };
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    throw new Error('Failed to delete session');
+  }
 }
