@@ -2,8 +2,8 @@
 
 import { FormState, LoginFormState, LoginSchema, SignupFormSchema } from '@/lib/definitions';
 import bcrypt from 'bcryptjs';
-import prisma from '../../lib/prisma';
-import { createSession, deleteSession } from '../../lib/session';
+import prisma from '@/lib/prisma';
+import { createSession, deleteSession } from '@/lib/session';
 import { cookies } from 'next/headers';
 
 export async function login(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
@@ -26,7 +26,7 @@ export async function login(prevState: LoginFormState, formData: FormData): Prom
     // Find user by email
     const user = await prisma.users.findUnique({
       where: { email },
-      select: { user_id: true, password: true, username: true ,email: true}, // Only select necessary fields
+      select: { user_id: true, password: true, username: true, email: true }, // Only select necessary fields
     });
 
     // Check if user exists (invalid email)
@@ -87,8 +87,8 @@ export async function signup(
     const user = await prisma.users.create({
       data: {
         username: username,
-        email: email, 
-        password: hashedPassword!, 
+        email: email,
+        password: hashedPassword!,
       },
       select: { user_id: true }, // Only return the user ID
     });
@@ -119,33 +119,10 @@ export async function signup(
   }
 }
 
-
 export async function logout() {
-  try {
-    // Get the cookie store instance
-    const cookieStore = cookies();
+  // Clear session from session store
+  await deleteSession();
 
-    // List all cookie names that you want to clear (example session, auth, etc.)
-    const sessionCookies = [
-      'session', 
-      'authToken', 
-      'refreshToken',
-      'next-auth.session-token',        // NextAuth session token
-      '__Secure-next-auth.session-token' // Secure cookie for NextAuth
-    ]; 
-
-    // Loop through and clear each cookie by setting maxAge to 0 and specifying the domain
-    sessionCookies.forEach(cookie => {
-      cookieStore.set(cookie, '', { maxAge: 0, domain: 'myflix-amber.vercel.app' });
-    });
-
-    // Optionally, you can return a redirect or message
-    return { redirect: '/' };
-  } catch (error) {
-    console.error('Error logging out:', error);
-    return {
-      success: false,
-      message: 'An error occurred while logging out.',
-    };
-  }
+  // Redirect to home
+  return { redirect: '/' };
 }

@@ -41,7 +41,7 @@ export async function decrypt(session: string | undefined = '') {
 }
 
 // Create a session and set the cookie
-export async function createSession(userId: string, name: string, email:string) {
+export async function createSession(userId: string, name: string, email: string) {
   try {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day expiration
     const session = await encrypt({
@@ -102,7 +102,9 @@ export async function updateSession() {
 // Delete the session cookie
 export function deleteSession() {
   try {
+    // Delete custom session cookie
     cookies().delete('session');
+    // Delete NextAuth cookies
     cookies().delete('next-auth.session-token');
     cookies().delete('next-auth.callback-url');
     cookies().delete('next-auth.csrf-token');
