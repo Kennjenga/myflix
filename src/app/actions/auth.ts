@@ -122,13 +122,24 @@ export async function signup(
 
 export async function logout() {
   try {
+    // Get the cookie store instance
     const cookieStore = cookies();
-    
-    // Clear all cookies (retrieve all cookies and clear them)
-    cookieStore.getAll().forEach(cookie => {
-      cookieStore.set(cookie.name, '', { maxAge: 0 });
+
+    // List all cookie names that you want to clear (example session, auth, etc.)
+    const sessionCookies = [
+      'session', 
+      'authToken', 
+      'refreshToken',
+      'next-auth.session-token',        // NextAuth session token
+      '__Secure-next-auth.session-token' // Secure cookie for NextAuth
+    ]; 
+
+    // Loop through and clear each cookie by setting maxAge to 0 and specifying the domain
+    sessionCookies.forEach(cookie => {
+      cookieStore.set(cookie, '', { maxAge: 0, domain: 'myflix-amber.vercel.app' });
     });
 
+    // Optionally, you can return a redirect or message
     return { redirect: '/' };
   } catch (error) {
     console.error('Error logging out:', error);
