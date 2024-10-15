@@ -29,11 +29,6 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // 7. Redirect to /content if the user is authenticated on a public route
-  if (isPublicRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/', req.url))
-  }
-
   return NextResponse.next()
 }
 

@@ -114,7 +114,6 @@ export async function deleteSession() {
       });
     });
 
-    console.log(`Attempted to delete ${allCookies.length} cookies`);
     return { success: true, message: 'All cookies deletion attempted' };
   } catch (error) {
     console.error('Error deleting cookies:', error);

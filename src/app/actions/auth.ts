@@ -123,8 +123,7 @@ export async function logout() {
   try {
     // Clear session from session store
     await deleteSession();
-    // Redirect to home
-    return { redirect: '/' };
+
   } catch (error) {
     console.error('Error deleting session:', error);
     throw new Error('Failed to delete session');
