@@ -3,7 +3,7 @@ import { getToken } from "next-auth/jwt"
 import { decrypt } from '@/lib/session'
 
 // 1. Specify protected and public routes
-const protectedRoutes = ['/content', '/content/', '/user']
+const protectedRoutes = ['/content', '/content/', '/dashboard']
 const publicRoutes = ['/login', '/signup', '/']
 
 export default async function middleware(req: NextRequest) {
