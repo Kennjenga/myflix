@@ -1,4 +1,5 @@
 import { logout } from "@/app/actions/auth";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -7,7 +8,23 @@ const ProfileMenu = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout(); // Perform client-side logout
+      // Perform client-side logout
+      await signOut({ redirect: false });
+
+      // Call the server-side logout API
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed on server");
+      }
+
+      // Redirect to the login page after logout
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);

@@ -9,12 +9,10 @@ export const options: NextAuthOptions = {
     GitHubProvider({
       profile(profile) {
         console.log("GitHub profile:", profile);
-
         let userRole = "GitHub User";
         if (profile?.email === "kinyagia10@gmail.com") {
           userRole = "admin";
         }
-
         return {
           ...profile,
           name: profile.login,
@@ -27,12 +25,10 @@ export const options: NextAuthOptions = {
     GoogleProvider({
       profile(profile) {
         console.log("Google profile:", profile);
-
         let userRole = "Google User"; 
         if (profile?.email === "kinyagia10@gmail.com") {
           userRole = "admin";
         }
-
         return {
           ...profile,
           id: profile.sub,
@@ -57,26 +53,18 @@ export const options: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {    
-        // Check if the URL is the login page
-        if (url === `${baseUrl}/login`) {
-          return `${baseUrl}/content`; // Redirect to /content from /login
-        }
-        
-        // Default redirect logic for other URLs
-        if (url.startsWith("/")) return `${baseUrl}${url}`;
-        else if (new URL(url).origin === baseUrl) return url;
-    
-        return baseUrl; // Fallback
-      },
-      // This callback is triggered whenever a user signs in.
+      if (url === `${baseUrl}/login`) {
+        return `${baseUrl}/content`;
+      }
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
     async signIn({ user, account, profile }) {
       try {
-        // Check if user exists in the database
         const existingUser = await prisma.users.findUnique({
           where: { email: user.email ?? undefined },
         });
-
-        // If user does not exist, create a new user
         if (!existingUser) {
           const hashedPassword = await bcrypt.hash('12345678', 10);
           await prisma.users.create({
@@ -85,23 +73,22 @@ export const options: NextAuthOptions = {
               username: user.name ?? 'Unknown User',
               role: user.role ?? 'user',
               password: hashedPassword,
-               // You should replace this with a secure password generation logic
-              // image: user.image,
-              // You can also include any additional fields you want
             },
           });
         }
-
-        // If the user exists or is created successfully, sign them in
         return true;
       } catch (error) {
         console.error("Error signing in:", error);
-        return false; // Return false to prevent the sign-in
+        return false;
       }
     },
-    
+  },
+  events: {
+    async signOut({ session, token }) {
+      // Perform any necessary cleanup here
+    },
   },
   pages: {
-    signIn: '/login', // Correct path based on where your login page is located
+    signIn: '/login',
   },
 };
