@@ -120,14 +120,13 @@ export const Dashboard: React.FC<{ user: User }> = ({ user }) => {
           <ArrowLeft className="mr-2 h-5 w-5" />
           Back
         </Button>
-        <Button
-          variant="outline"
-          className="w-full justify-start"
+        <button
+          className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150 ease-in-out"
           onClick={handleLogout}
         >
           <LogOut className="mr-2 h-5 w-5" />
-          Logout
-        </Button>
+          <span>Logout</span>
+        </button>
       </div>
     </ScrollArea>
   );
