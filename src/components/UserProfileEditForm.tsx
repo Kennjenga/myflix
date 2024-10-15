@@ -93,7 +93,6 @@ export default function UserProfileEditForm({
         throw new Error("Failed to update profile");
       }
 
-      console.log("Profile updated successfully!");
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",

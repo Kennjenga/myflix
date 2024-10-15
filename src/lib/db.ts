@@ -11,7 +11,6 @@ const pool = mysql.createPool({
 });
 
 pool.on('connection', (connection) => {
-  console.log('A new connection was made with the ID', connection.threadId);
 });
 
 pool.on('error', (err) => {

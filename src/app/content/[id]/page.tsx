@@ -22,8 +22,6 @@ export default async function Page({ params }: { params: { id: number } }) {
   const contentId = params.id;
   let user = await userService();
   const content = await fetchContent(contentId);
-  console.log(content);
-
   if (!content) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white text-2xl">

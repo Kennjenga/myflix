@@ -17,8 +17,6 @@ export async function GET(
   }
 
   try {
-    console.log(`Fetching content with ID: ${numericId}`);
-
     // Fetch the content from the database using Prisma
     const content = await prisma.content.findUnique({
       where: { content_id: numericId },
@@ -60,8 +58,6 @@ export async function DELETE(
   }
 
   try {
-    console.log(`Deleting content with ID: ${numericId}`);
-
     // Delete the content from the database
     const deletedContent = await prisma.content.delete({
       where: { content_id: numericId },
@@ -97,9 +93,6 @@ export async function PUT(
 
   try {
     const body = await req.json();
-
-    console.log(`Updating content with ID: ${numericId}`);
-
     // Update the content in the database
     const updatedContent = await prisma.content.update({
       where: { content_id: numericId },
