@@ -56,7 +56,6 @@ const App = () => {
 
     fetchUserSession();
   }, []);
-  // console.log(user);
 
   if (loading) {
     return <div>Loading...</div>;

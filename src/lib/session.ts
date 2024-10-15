@@ -2,6 +2,7 @@ import 'server-only';
 import { SignJWT, jwtVerify } from 'jose';
 import { SessionPayload } from '@/lib/definitions';
 import { cookies } from 'next/headers';
+import { signOut } from 'next-auth/react';
 
 const secretKey = process.env.NEXTAUTH_SECRET;
 
@@ -74,13 +75,11 @@ export async function updateSession() {
   const sessionCookie = cookies().get('session')?.value;
 
   if (!sessionCookie) {
-    console.log('No session found');
     return null;
   }
 
   const payload = await decrypt(sessionCookie);
   if (!payload) {
-    console.log('Invalid session payload');
     return null;
   }
 
@@ -101,22 +100,22 @@ export async function updateSession() {
 
 export async function deleteSession() {
   try {
-    const cookieStore = cookies();
-    const allCookies = cookieStore.getAll();
+    // Clear all cookies
+  const cookieStore = cookies()
+  const allCookies = cookieStore.getAll()
+  allCookies.forEach(cookie => {
+    cookieStore.delete(cookie.name)
+  })
 
-    allCookies.forEach((cookie) => {
-      cookieStore.set({
-        name: cookie.name,
-        value: '',
-        path: '/',
-        expires: new Date(Date.now()),
-        maxAge: 0
-      });
-    });
-
-    return { success: true, message: 'All cookies deletion attempted' };
-  } catch (error) {
-    console.error('Error deleting cookies:', error);
-    throw new Error('Failed to delete cookies');
+  // Perform NextAuth signOut 
+  if (typeof window !== 'undefined') {
+    await signOut({ redirect: false })
   }
-}
+
+  // Return a value indicating successful logout
+  return { success: true }
+
+  } catch (err) {
+    console.error('Error deleting session:', err);
+  }
+};

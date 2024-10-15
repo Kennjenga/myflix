@@ -62,7 +62,6 @@ export default function ContentManagementPage() {
       `/api/content?page=${currentPage}&limit=${itemsPerPage}`
     );
     const data = await response.json();
-    console.log(data);
     setContentList(data.content);
     setTotalPages(Math.ceil(data.totalPages));
   }, [currentPage]);
@@ -180,9 +179,6 @@ export default function ContentManagementPage() {
     setEpisodes(null);
     setImage_url("");
   };
-
-  console.log("pages", totalPages);
-
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-8">Content Management</h1>

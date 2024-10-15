@@ -63,7 +63,6 @@ export default function ContentManagementPage() {
       `/api/content?page=${currentPage}&limit=${itemsPerPage}&query=${searchQuery}`
     );
     const data = await response.json();
-    console.log(data);
     setContentList(data.content);
     setTotalPages(Math.ceil(data.totalPages));
   }, [currentPage, searchQuery]);

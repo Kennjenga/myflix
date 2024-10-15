@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   User,
@@ -56,8 +55,12 @@ export const Dashboard: React.FC<{ user: User }> = ({ user }) => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await logout();
-    router.push("/");
+    try {
+      await logout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const commonNavItems: NavItem[] = [

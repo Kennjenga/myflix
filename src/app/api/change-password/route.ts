@@ -17,7 +17,6 @@ export async function POST(req: Request) {
   const user =
     session?.user ||
     (sessionCookie ? await decrypt(sessionCookie.value) : null);
-  console.log('Session:', session); // Log session for debugging
 
   // Check if session exists
   if (!user) {
