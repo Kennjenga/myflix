@@ -2,7 +2,6 @@ import 'server-only';
 import { SignJWT, jwtVerify } from 'jose';
 import { SessionPayload } from '@/lib/definitions';
 import { cookies } from 'next/headers';
-import { signOut } from 'next-auth/react';
 
 const secretKey = process.env.NEXTAUTH_SECRET;
 
@@ -106,11 +105,6 @@ export async function deleteSession() {
   allCookies.forEach(cookie => {
     cookieStore.delete(cookie.name)
   })
-
-  // Perform NextAuth signOut 
-  if (typeof window !== 'undefined') {
-    await signOut({ redirect: false })
-  }
 
   // Return a value indicating successful logout
   return { success: true }

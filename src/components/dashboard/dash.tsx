@@ -31,6 +31,7 @@ import Subscriptions from "@/components/dashboard/subscriptions";
 import AllUsers from "@/components/dashboard/all-users";
 import UpdateContent from "./update-content";
 import AllSubscriptions from "@/components/dashboard/all-subscriptions";
+import { signOut } from "next-auth/react";
 
 interface User {
   name: string;
@@ -57,6 +58,10 @@ export const Dashboard: React.FC<{ user: User }> = ({ user }) => {
   const handleLogout = async () => {
     try {
       await logout();
+      // Perform NextAuth signOut
+
+      await signOut({ redirect: false });
+
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -120,13 +125,14 @@ export const Dashboard: React.FC<{ user: User }> = ({ user }) => {
           <ArrowLeft className="mr-2 h-5 w-5" />
           Back
         </Button>
-        <button
-          className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150 ease-in-out"
+        <Button
+          variant="outline"
+          className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
           onClick={handleLogout}
         >
           <LogOut className="mr-2 h-5 w-5" />
-          <span>Logout</span>
-        </button>
+          Logout
+        </Button>
       </div>
     </ScrollArea>
   );

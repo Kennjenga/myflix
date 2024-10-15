@@ -1,4 +1,5 @@
 import { logout } from "@/app/actions/auth";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -8,6 +9,10 @@ const ProfileMenu = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      // Perform NextAuth signOut
+
+      await signOut({ redirect: false });
+
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
