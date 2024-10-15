@@ -105,18 +105,17 @@ export async function deleteSession() {
     const allCookies = cookieStore.getAll();
 
     allCookies.forEach((cookie) => {
-      cookieStore.delete({
+      cookieStore.set({
         name: cookie.name,
+        value: '',
         path: '/',
-        domain: '',
-        secure: true,
-        httpOnly: true,
-        sameSite: 'lax'
+        expires: new Date(0),
+        maxAge: 0
       });
     });
 
-    console.log(`Deleted ${allCookies.length} cookies`);
-    return { success: true, message: 'All cookies deleted successfully' };
+    console.log(`Attempted to delete ${allCookies.length} cookies`);
+    return { success: true, message: 'All cookies deletion attempted' };
   } catch (error) {
     console.error('Error deleting cookies:', error);
     throw new Error('Failed to delete cookies');
