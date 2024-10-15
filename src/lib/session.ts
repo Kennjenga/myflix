@@ -109,7 +109,7 @@ export async function deleteSession() {
         name: cookie.name,
         value: '',
         path: '/',
-        expires: new Date(0),
+        expires: new Date(Date.now()),
         maxAge: 0
       });
     });
