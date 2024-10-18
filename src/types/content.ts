@@ -9,3 +9,14 @@ interface Content {
     content_type: string;
     rating: string;
   }
+
+  interface User {
+    user_id: number;
+    username: string;
+    phone_number: string;
+    firstname: string;
+    lastname: string;
+    name: string;
+    email: string;
+    role: string;
+  }

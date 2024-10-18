@@ -31,6 +31,8 @@ import { Label } from "@/components/ui/label";
 import { MoreHorizontal, Trash2, UserCog, UserPlus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
+import prisma from "@/lib/prisma";
+import { PassThrough } from "stream";
 
 interface User {
   user_id: number;
@@ -54,12 +56,12 @@ const AllUsers: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/user/all");
+        const response = await fetch("/api/user/");
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
         const data = await response.json();
-        setUsers(data);
+        setUsers(data.data);
       } catch (error) {
         console.error("Error fetching users:", error);
         toast({
@@ -75,6 +77,7 @@ const AllUsers: React.FC = () => {
     fetchUsers();
   }, []);
 
+  // handles user role change
   const handleRoleChange = async (userId: number, newRole: string) => {
     // Optimistic update
     const updatedUsers = users.map((user) =>
@@ -96,6 +99,8 @@ const AllUsers: React.FC = () => {
         throw new Error("Failed to update user role");
       }
 
+      const updatedUser = await response.json();
+
       toast({
         title: "Success",
         description: "User role updated successfully.",
@@ -112,6 +117,7 @@ const AllUsers: React.FC = () => {
     }
   };
 
+  // delete user
   const handleDeleteUser = async (userId: number) => {
     if (confirm("Are you sure you want to delete this user?")) {
       // Optimistic update
@@ -144,6 +150,7 @@ const AllUsers: React.FC = () => {
     }
   };
 
+  // create user
   const handleCreateUser = async (
     newUser: Omit<User, "user_id" | "created_at" | "updated_at">
   ) => {
@@ -161,7 +168,9 @@ const AllUsers: React.FC = () => {
       }
 
       const createdUser = await response.json();
-      setUsers([...users, createdUser]);
+
+      // Add the new user to the list
+      setUsers((prevUsers) => [...prevUsers, createdUser]);
       setIsCreateUserDialogOpen(false);
 
       toast({
@@ -292,7 +301,7 @@ const AllUsers: React.FC = () => {
         open={isCreateUserDialogOpen}
         onOpenChange={setIsCreateUserDialogOpen}
       >
-        <DialogContent>
+        <DialogContent className="text-gray-800">
           <DialogHeader>
             <DialogTitle>Create New User</DialogTitle>
             <DialogDescription>
@@ -310,6 +319,7 @@ const AllUsers: React.FC = () => {
                 firstname: formData.get("firstname") as string,
                 lastname: formData.get("lastname") as string,
                 role: formData.get("role") as string,
+                password: formData.get("password") as string,
               };
               handleCreateUser(newUser);
             }}
@@ -366,6 +376,17 @@ const AllUsers: React.FC = () => {
                 <Input
                   id="lastname"
                   name="lastname"
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="password" className="text-right">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  name="password"
                   className="col-span-3"
                   required
                 />

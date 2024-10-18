@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -18,17 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-interface User {
-  user_id: number;
-  username: string;
-  phone_number: string;
-  firstname: string;
-  lastname: string;
-  name: string;
-  email: string;
-  role: string;
-}
 
 interface Subscription {
   sub_id: number;
@@ -63,7 +53,13 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        setSubscriptions(data.subscriptions);
+        setSubscriptions(
+          data.subscriptions.sort(
+            (a: Subscription, b: Subscription) =>
+              new Date(b.start_date).getTime() -
+              new Date(a.start_date).getTime()
+          )
+        );
       } catch (err) {
         setError("Failed to fetch subscriptions");
       } finally {
@@ -121,7 +117,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
     );
   }
 
-  const subscription = subscriptions[0];
+  const mostRecentSubscription = subscriptions[0];
 
   return (
     <div className="space-y-6">
@@ -136,22 +132,22 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
         </Card>
       ) : (
         <>
-          <Card key={subscription.sub_id} className="w-full">
+          <Card key={mostRecentSubscription.sub_id} className="w-full">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-2xl font-bold">
-                  {subscription.subscription_type.subscription_type}
+                  {mostRecentSubscription.subscription_type.subscription_type}
                 </CardTitle>
                 <Badge
                   className={`${getStatusColor(
-                    subscription.status
+                    mostRecentSubscription.status
                   )} text-white`}
                 >
-                  {subscription.status}
+                  {mostRecentSubscription.status}
                 </Badge>
               </div>
               <CardDescription>
-                Subscription ID: {subscription.sub_id}
+                Subscription ID: {mostRecentSubscription.sub_id}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -161,7 +157,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
                   <div>
                     <p className="text-sm text-muted-foreground">Start Date</p>
                     <p className="font-medium">
-                      {formatDate(subscription.start_date)}
+                      {formatDate(mostRecentSubscription.start_date)}
                     </p>
                   </div>
                 </div>
@@ -170,7 +166,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
                   <div>
                     <p className="text-sm text-muted-foreground">End Date</p>
                     <p className="font-medium">
-                      {formatDate(subscription.end_date)}
+                      {formatDate(mostRecentSubscription.end_date)}
                     </p>
                   </div>
                 </div>
@@ -179,7 +175,10 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
                   <div>
                     <p className="text-sm text-muted-foreground">Cost</p>
                     <p className="font-medium">
-                      ${Number(subscription.subscription_type.cost).toFixed(2)}
+                      $
+                      {Number(
+                        mostRecentSubscription.subscription_type.cost
+                      ).toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -188,13 +187,15 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
                   <div>
                     <p className="text-sm text-muted-foreground">Type ID</p>
                     <p className="font-medium">
-                      {subscription.subscription_type.type_id}
+                      {mostRecentSubscription.subscription_type.type_id}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="mt-6 flex justify-end">
-                <Button variant="outline">Manage Subscription</Button>
+                <Link href="/subscription">
+                  <Button variant="outline">Manage Subscription</Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
@@ -215,14 +216,40 @@ const Subscription: React.FC<SubscriptionProps> = ({ user }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="text-center text-muted-foreground"
-                    >
-                      No previous subscriptions found.
-                    </TableCell>
-                  </TableRow>
+                  {subscriptions.slice(1).map((subscription) => (
+                    <TableRow key={subscription.sub_id}>
+                      <TableCell>
+                        {subscription.subscription_type.subscription_type}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(subscription.start_date)}
+                      </TableCell>
+                      <TableCell>{formatDate(subscription.end_date)}</TableCell>
+                      <TableCell>
+                        <Badge
+                          className={`${getStatusColor(
+                            subscription.status
+                          )} text-white`}
+                        >
+                          {subscription.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        $
+                        {Number(subscription.subscription_type.cost).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {subscriptions.length === 1 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className="text-center text-muted-foreground"
+                      >
+                        No previous subscriptions found.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

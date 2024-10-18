@@ -16,6 +16,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
           phone_number: body.phone_number,
           firstname: body.firstname,
           lastname: body.lastname,
+          role: body.role,
           updated_at: new Date(),
         },
       });

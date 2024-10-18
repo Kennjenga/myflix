@@ -28,7 +28,8 @@ const App = () => {
           const userResponse = await fetch(
             `/api/user?email=${sessionData.email}`
           );
-          const userData = await userResponse.json();
+          const data = await userResponse.json();
+          const userData = data.data;
 
           if (userResponse.ok) {
             setUser({

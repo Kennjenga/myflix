@@ -15,8 +15,4 @@ export async function GET(req: NextRequest, res: NextResponse) {
     } catch (error) {
         console.error(error); // Log the error for debugging
         return NextResponse.json({ error: 'Failed to fetch subscription types' }, { status: 500 });
-    } finally {
-        await prisma.$disconnect(); // Ensure the Prisma client is disconnected
-    }
-}
-
+    } }

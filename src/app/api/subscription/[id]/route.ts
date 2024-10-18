@@ -50,3 +50,58 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
+
+// PATCH by id to change from sub_Type from active to cancel and modify subscription type
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+    const subId = Number(params.id);
+
+    if (!subId) {
+        return NextResponse.json({ message: 'Invalid subscription ID' }, { status: 400 });
+    }
+
+    try {
+        // Extract the request body
+        const body = await request.json();
+
+        // Determine the action: modify or cancel
+        if (body.newTypeId) {
+            // Handle modifying the subscription
+            const updatedSubscription = await prisma.user_subscription.update({
+                where: {
+                    sub_id: subId,
+                },
+                data: {
+                    sub_type: body.newTypeId, // Update the subscription type
+                    status: 'active',          // Ensure the status is set to active when modifying
+                },
+            });
+
+            if (!updatedSubscription) {
+                return NextResponse.json({ message: 'No subscription found for this ID' }, { status: 404 });
+            }
+
+            return NextResponse.json(updatedSubscription);
+        } else if (body.cancel) {
+            // Handle cancelling the subscription
+            const cancelledSubscription = await prisma.user_subscription.update({
+                where: {
+                    sub_id: subId,
+                },
+                data: {
+                    status: 'cancelled', // Set the status to cancelled
+                },
+            });
+
+            if (!cancelledSubscription) {
+                return NextResponse.json({ message: 'No subscription found for this ID' }, { status: 404 });
+            }
+
+            return NextResponse.json(cancelledSubscription);
+        } else {
+            return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
+        }
+    } catch (error) {
+        console.error('Error updating subscription:', error);
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    }
+}

@@ -28,6 +28,12 @@ const ProfileMenu = () => {
         >
           Profile
         </Link>
+        <Link
+          href="/subscription"
+          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-300"
+        >
+          subscription
+        </Link>
         <button
           onClick={handleLogout}
           className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-300"
