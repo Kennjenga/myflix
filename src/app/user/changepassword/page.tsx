@@ -163,7 +163,7 @@ export default function ChangePasswordPage() {
         </CardContent>
         <CardFooter>
           <Button variant="outline" asChild className="w-full">
-            <Link href="/user">
+            <Link href="/dashboard">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Profile
             </Link>
           </Button>
